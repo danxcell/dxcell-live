@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Home Page V1 Terminal</title>
+<link href="./app.css" rel="stylesheet"/>
+</head>
+<body>
+<header class="dxtl-header"><img class="logo" src="logo.svg"/><div class="status"><span class="pulse-dot"></span>Live Terminal</div></header>
+<div class="app">
+<aside class="nav-rail">
+<div class="brand">
+<svg aria-hidden="true" class="brand-icon" viewbox="0 0 48 48">
+<defs>
+<lineargradient id="g" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#60A5FA"></stop><stop offset="1" stop-color="#22D3EE"></stop>
+</lineargradient>
+</defs>
+<circle cx="24" cy="24" fill="url(#g)" opacity=".25" r="20"></circle>
+<circle cx="24" cy="24" fill="none" opacity=".6" r="19" stroke="url(#g)" stroke-width="2"></circle>
+<polygon fill="url(#g)" points="21,17 33,24 21,31"></polygon>
+</svg>
+<span class="brand-text">XLT</span>
+</div>
+<nav class="nav-group">
+<button class="nav-btn" data-route="home"><span class="i">🏠</span><span class="t">Home</span></button>
+<button class="nav-btn" data-route="pulse"><span class="i">📈</span><span class="t">Pulse</span></button>
+<button class="nav-btn" data-route="dex"><span class="i">🔄</span><span class="t">Dex</span></button>
+<button class="nav-btn" data-route="wealth"><span class="i">💼</span><span class="t">Wealth</span></button>
+<button class="nav-btn" data-route="bots"><span class="i">🤖</span><span class="t">Bot Army</span></button>
+<button class="nav-btn" data-route="market"><span class="i">🛒</span><span class="t">Market Place</span></button>
+<button class="nav-btn" data-route="learn"><span class="i">🎓</span><span class="t">Learn Zone</span></button>
+</nav>
+<div class="nav-spacer"></div>
+<nav class="nav-group">
+<button class="nav-btn" data-route="settings"><span class="i">⚙️</span><span class="t">Settings</span></button>
+<button class="nav-btn" active data-route="login"><span class="i">🔒</span><span class="t">User Login</span></button>
+<button class="nav-btn" data-route="mt"><span class="i">📊</span><span class="t">MT4/MT5 Account</span></button>
+</nav>
+</aside>
+<main class="main">
+<div class="topbar">
+  <span class="badge left">Live Mode</span>
+  <div class="topbar-title">User Login</div>
+  <div class="spacer"></div>
+  <div class="wallet" id="wallet-open">
+    <span>👛</span>
+    <strong id="wallet-status">Disconnected</strong>
+  </div>
+</div>
+<div class="content">
+  <section class="card" style="min-height:300px;display:flex;align-items:center;justify-content:center;">
+    <div class="muted">This page is ready for content.</div>
+  </section>
+</div>
+</main>
+</div>
+<div class="modal-backdrop" id="wallet-modal">
+<div class="modal">
+<span class="close-x" id="wallet-close">✕</span>
+<h4>Connect Wallet</h4>
+<p style="color:#94a3b8;margin:0 0 8px 0">Choose a wallet:</p>
+<div class="row">
+<button class="btn full" data-wallet="MetaMask">MetaMask</button>
+<button class="btn full" data-wallet="WalletConnect">WalletConnect</button>
+</div>
+<div class="row">
+<button class="btn" onclick="DXLT.disconnect()">Disconnect</button>
+<button class="btn primary" onclick="document.getElementById('wallet-close').click()">Close</button>
+</div>
+</div>
+</div>
+<footer>DXLT Neon v1.0</footer>
+
+<script src="./feeds.js"></script>
+
+<script>
+(() => {
+  const routes = {
+    home: 'index.html',
+    pulse: 'pulse.html',
+    dex: 'dex.html',
+    wealth: 'wealth.html',
+    bots: 'bots.html',
+    market: 'market.html',
+    learn: 'learn.html',
+    settings: 'settings.html',
+    login: 'login.html',
+    mt: 'mt.html'
+  };
+  document.querySelectorAll('.nav-btn[data-route]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const r = btn.getAttribute('data-route');
+      if (routes[r]) window.location.href = routes[r];
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
