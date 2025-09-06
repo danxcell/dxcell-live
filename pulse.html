@@ -52,7 +52,6 @@
       <span class="badge left">Live Mode</span>
       <div class="topbar-title">Pulse</div>
       <div class="spacer"></div>
-
       <div class="wallet" id="wallet-open">
         <span>👛</span><strong id="wallet-status">Disconnected</strong>
       </div>
@@ -158,6 +157,8 @@
         <div class="mini-head">
           <span>Market Depth</span>
           <span class="mini-sub muted">Top 25 levels · live</span>
+          <!-- NEW: venue/tz label -->
+          <span id="depthVenue" class="mini-sub muted" style="margin-left:.5rem"></span>
         </div>
         <div class="gauge-row">
           <canvas id="depthGauge"></canvas>
@@ -166,6 +167,8 @@
             <div class="ask">Asks <strong id="depthAsk">—%</strong></div>
           </div>
         </div>
+        <!-- NEW: sparkline history -->
+        <canvas id="depthSpark" style="margin-top:.5rem;width:540px;max-width:100%;height:44px"></canvas>
       </section>
     </div>
 
@@ -266,106 +269,126 @@
       if (routes[r]) window.location.href = routes[r];
     });
   });
+
+  // Make the "Set" button standardize the symbol + announce it to listeners
+  const setBtn = document.getElementById('pulseSet');
+  const search = document.getElementById('pulseSearch');
+  const chip   = document.getElementById('pulseSymbol');
+  if (setBtn && search && chip) {
+    setBtn.addEventListener('click', () => {
+      const s = (search.value || '').trim().toUpperCase();
+      if (!s) return;
+      chip.textContent = s;                         // visible chip
+      window.CURRENT = Object.assign({}, window.CURRENT, { symbol: s });
+      window.dispatchEvent(new CustomEvent('dxlt:set-symbol', { detail: { symbol: s }}));
+    });
+  }
 })();
 </script>
 
-<script src="./bots.js"></script>
-<script src="./pulse.js"></script>
-
-<!-- Depth wiring (smart venue, auto refresh, neon gauge) -->
+<!-- Depth wiring (smart venue + tz + spark + gauge) -->
 <script id="depth-wire">
 (() => {
-  const $ = (sel) => document.querySelector(sel);
-
+  const $  = (s) => document.querySelector(s);
   const bidEl   = $('#depthBid');
   const askEl   = $('#depthAsk');
-  const gauge   = $('#depthGauge');
+  const venueEl = $('#depthVenue');
+  const gaugeCv = $('#depthGauge');
+  const sparkCv = $('#depthSpark');
 
-  // Canvas size & DPR crispness
-  function sizeCanvas(cv, w=360, h=130){
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  const hist = [];               // keep last N bid% for spark
+  const HIST_N = 20;
+
+  function getSymbol(){
+    const chip = $('#pulseSymbol');
+    const t = chip && chip.textContent.trim();
+    if (t && t !== '—') return t.toUpperCase();
+    if (window.CURRENT?.symbol) return String(window.CURRENT.symbol).toUpperCase();
+    const h = $('#pdSymbol');    // title fallback
+    const ht = h && h.textContent.trim();
+    if (ht && ht !== '—') return ht.toUpperCase();
+    return 'BTCUSDT';
+  }
+
+  function sizeCanvas(cv, w, h){
     const dpr = window.devicePixelRatio || 1;
     cv.width  = Math.floor(w * dpr);
     cv.height = Math.floor(h * dpr);
     cv.style.width  = w + 'px';
     cv.style.height = h + 'px';
     const ctx = cv.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
     return ctx;
   }
 
   function drawGauge(cv, bidPct){
     const ctx = sizeCanvas(cv, 380, 140);
-    const W = cv.clientWidth  || 380;
-    const H = cv.clientHeight || 140;
-
-    const cx = W/2, cy = H-10;      // center at bottom for semi-circle
+    const W = 380, H = 140;
+    const cx = W/2, cy = H-10;
     const R  = Math.min(W*0.42, H*0.9);
 
-    // background arc
     ctx.lineWidth = 10;
-    ctx.strokeStyle = 'rgba(148,163,184,0.25)';
-    ctx.beginPath();
-    ctx.arc(cx, cy, R, Math.PI, 0, false);
-    ctx.stroke();
 
-    // green (bids) arc
-    const bidsA = Math.max(0, Math.min(100, bidPct)) / 100 * Math.PI;
+    // background
+    ctx.strokeStyle = 'rgba(148,163,184,0.22)';
+    ctx.beginPath(); ctx.arc(cx,cy,R,Math.PI,0,false); ctx.stroke();
+
+    // green (bids)
+    const a = Math.max(0,Math.min(100,bidPct))/100 * Math.PI;
     const green = ctx.createLinearGradient(0,0,W,0);
-    green.addColorStop(0,'#16a34a');
-    green.addColorStop(1,'#22d3ee');
+    green.addColorStop(0,'#16a34a'); green.addColorStop(1,'#22d3ee');
+    ctx.strokeStyle = green; ctx.beginPath();
+    ctx.arc(cx,cy,R,Math.PI,Math.PI+a,false); ctx.stroke();
 
-    ctx.strokeStyle = green;
-    ctx.beginPath();
-    ctx.arc(cx, cy, R, Math.PI, Math.PI + bidsA, false);
-    ctx.stroke();
-
-    // red (asks) arc
+    // red (asks)
     const red = ctx.createLinearGradient(W,0,0,0);
-    red.addColorStop(0,'#ef4444');
-    red.addColorStop(1,'#f59e0b');
-    ctx.strokeStyle = red;
-    ctx.beginPath();
-    ctx.arc(cx, cy, R, Math.PI + bidsA, 0, false);
-    ctx.stroke();
+    red.addColorStop(0,'#ef4444'); red.addColorStop(1,'#f59e0b');
+    ctx.strokeStyle = red; ctx.beginPath();
+    ctx.arc(cx,cy,R,Math.PI+a,0,false); ctx.stroke();
 
     // needle
-    const ang = (bidPct/100)*Math.PI - Math.PI/2; // -90..+90
+    const ang = (bidPct/100)*Math.PI - Math.PI/2;
     const nx = cx + Math.cos(Math.PI + ang) * (R-6);
     const ny = cy + Math.sin(Math.PI + ang) * (R-6);
-
-    ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(nx, ny);
-    ctx.stroke();
-
-    ctx.fillStyle = '#94a3b8';
-    ctx.beginPath();
-    ctx.arc(cx, cy, 4, 0, 2*Math.PI);
-    ctx.fill();
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(nx,ny); ctx.stroke();
+    ctx.fillStyle = '#94a3b8'; ctx.beginPath(); ctx.arc(cx,cy,4,0,2*Math.PI); ctx.fill();
   }
 
-  function currentSymbol(){
-    // Prefer the live chip if filled
-    const chip = $('#pulseSymbol');
-    const t = chip && chip.textContent.trim();
-    if (t && t !== '—') return t.toUpperCase();
+  function drawSpark(cv, arr){
+    const W = Math.max(cv.clientWidth||540, 320);
+    const H = 44;
+    const ctx = sizeCanvas(cv, W, H);
+    ctx.clearRect(0,0,W,H);
 
-    // Or a global CURRENT if your app sets it
-    if (window.CURRENT && CURRENT.symbol) return String(CURRENT.symbol).toUpperCase();
+    if (!arr.length) return;
+    const n = arr.length;
+    const min = 0, max = 100;
+    const step = W / Math.max(1, n-1);
 
-    // Or the big title (pdSymbol)
-    const hd = $('#pdSymbol');
-    const hdt = hd && hd.textContent.trim();
-    if (hdt && hdt !== '—') return hdt.toUpperCase();
+    // grid baseline
+    ctx.strokeStyle='rgba(148,163,184,.12)';
+    ctx.beginPath(); ctx.moveTo(0,H-1.5); ctx.lineTo(W,H-1.5); ctx.stroke();
 
-    return 'BTCUSDT';
+    // line
+    ctx.strokeStyle='#22d3ee'; ctx.lineWidth=2;
+    ctx.beginPath();
+    for (let i=0;i<n;i++){
+      const x = i*step;
+      const y = H - (arr[i]-min)/(max-min) * (H-4) - 2;
+      i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+    }
+    ctx.stroke();
+
+    // glow
+    ctx.strokeStyle='rgba(34,211,238,.35)';
+    ctx.lineWidth=6; ctx.stroke();
   }
 
   async function loadDepth(sym){
-    try {
-      const url = `/api/depth?symbol=${encodeURIComponent(sym)}&limit=50&levels=25&venue=smart&cb=${Date.now()}`;
+    try{
+      const url = `/api/depth?symbol=${encodeURIComponent(sym)}&limit=50&levels=25&venue=smart&tz=${encodeURIComponent(tz)}&cb=${Date.now()}`;
       const r = await fetch(url, { cache: 'no-store' });
       const j = await r.json();
 
@@ -374,25 +397,35 @@
 
       if (bidEl) bidEl.textContent = `${bid.toFixed(0)}%`;
       if (askEl) askEl.textContent = `${ask.toFixed(0)}%`;
+      if (venueEl) venueEl.textContent = `• ${sym} • source: ${j.venue || '—'} • ${tz}`;
 
-      if (gauge) drawGauge(gauge, bid);
-    } catch (err) {
-      console.warn('depth fetch error', err);
+      if (gaugeCv) drawGauge(gaugeCv, bid);
+
+      hist.push(bid); while (hist.length > HIST_N) hist.shift();
+      if (sparkCv) drawSpark(sparkCv, hist);
+    }catch(e){
+      console.warn('depth fetch error', e);
     }
   }
 
-  // tick on load + every 15s
-  function tick() { loadDepth(currentSymbol()); }
-  document.addEventListener('DOMContentLoaded', tick);
-  setInterval(tick, 15000);
+  function tick(){ loadDepth(getSymbol()); }
 
-  // react to symbol changes (when user sets a new asset)
+  document.addEventListener('DOMContentLoaded', () => {
+    tick();
+    setInterval(tick, 15000);
+  });
+
+  // react to UI symbol changes
   const symNode = document.getElementById('pulseSymbol');
   if (symNode && 'MutationObserver' in window){
     const mo = new MutationObserver(() => tick());
-    mo.observe(symNode, { childList: true, characterData: true, subtree: true });
+    mo.observe(symNode, { childList:true, characterData:true, subtree:true });
   }
+  window.addEventListener('dxlt:set-symbol', tick);
 })();
 </script>
+
+<script src="./bots.js"></script>
+<script src="./pulse.js"></script>
 </body>
 </html>
