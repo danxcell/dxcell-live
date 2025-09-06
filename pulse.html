@@ -247,7 +247,7 @@
 
 <script src="./feeds.js"></script>
 
-<!-- Routes + basic Set broadcast -->
+<!-- Routes -->
 <script>
 (() => {
   const routes = {
@@ -268,25 +268,10 @@
       if (routes[r]) window.location.href = routes[r];
     });
   });
-
-  // "Set" button standardizes symbol and broadcasts it
-  const setBtn = document.getElementById('pulseSet');
-  const search = document.getElementById('pulseSearch');
-  const chip   = document.getElementById('pulseSymbol');
-  if (setBtn && search && chip) {
-    setBtn.addEventListener('click', () => {
-      const s = (search.value || '').trim().toUpperCase();
-      if (!s) return;
-      chip.textContent = s;
-      window.CURRENT = Object.assign({}, window.CURRENT, { symbol: s });
-      window.dispatchEvent(new CustomEvent('dxlt:set-symbol', { detail: { symbol: s }}));
-    });
-    search.addEventListener('keydown', (e)=>{ if(e.key==='Enter') setBtn.click(); });
-  }
 })();
 </script>
 
-<!-- Search+ resolver & suggestions you asked to add -->
+<!-- Search: suggestions + resolve + broadcast -->
 <script>
 (() => {
   const input = document.getElementById('pulseSearch');
@@ -294,57 +279,50 @@
   const setBtn= document.getElementById('pulseSet');
   const chip  = document.getElementById('pulseSymbol');
 
-  // simple debounce
-  let t = null;
-  function debounce(fn, ms=150){ clearTimeout(t); t=setTimeout(fn, ms); }
+  let t=null; const debounce=(fn,ms=150)=>{clearTimeout(t);t=setTimeout(fn,ms);};
 
   async function loadSuggestions(q){
     if (!list) return;
-    try {
+    try{
       const r = await fetch(`/api/symbols?q=${encodeURIComponent(q||'')}`, { cache:'no-store' });
       const j = await r.json();
-      list.innerHTML = '';
-      (j.items||[]).forEach(it => {
-        const opt = document.createElement('option');
-        opt.value = it.symbol; // what gets inserted if user picks it
+      list.innerHTML='';
+      (j.items||[]).forEach(it=>{
+        const opt=document.createElement('option');
+        opt.value = it.symbol;
         opt.label = `${it.base}/${it.quote} — ${it.venues.join('/')}`;
         opt.textContent = opt.label;
         list.appendChild(opt);
       });
-    } catch(e){ /* silent */ }
+    }catch(_){}
+  }
+  if (input){
+    input.addEventListener('input', ()=>debounce(()=>loadSuggestions(input.value),120));
+    input.addEventListener('focus', ()=>{ if(!list.options.length) loadSuggestions(''); });
   }
 
-  if (input) {
-    input.addEventListener('input', () => debounce(() => loadSuggestions(input.value), 120));
-    // Preload popular on focus
-    input.addEventListener('focus', () => { if (!list.options.length) loadSuggestions(''); });
+  async function setSymbol(q){
+    if (!q) return;
+    try{
+      const r = await fetch(`/api/resolve?q=${encodeURIComponent(q)}&cb=${Date.now()}`, { cache:'no-store' });
+      const j = await r.json();
+      const sym = (j.symbol || q).toUpperCase();
+      chip.textContent = sym;
+      window.CURRENT = Object.assign({}, window.CURRENT, { symbol: sym });
+      window.dispatchEvent(new CustomEvent('dxlt:set-symbol', { detail: { symbol: sym }}));
+    }catch(_){
+      const sym = q.toUpperCase();
+      chip.textContent = sym;
+      window.CURRENT = Object.assign({}, window.CURRENT, { symbol: sym });
+      window.dispatchEvent(new CustomEvent('dxlt:set-symbol', { detail: { symbol: sym }}));
+    }
   }
-
-  if (setBtn && input && chip) {
-    setBtn.addEventListener('click', async () => {
-      const q = (input.value||'').trim();
-      if (!q) return;
-      try {
-        const r = await fetch(`/api/resolve?q=${encodeURIComponent(q)}&cb=${Date.now()}`, { cache:'no-store' });
-        const j = await r.json();
-        const sym = (j.symbol || q).toUpperCase();
-        chip.textContent = sym;
-        // make it visible to all existing listeners (ECG/Depth/etc.)
-        window.CURRENT = Object.assign({}, window.CURRENT, { symbol: sym });
-        window.dispatchEvent(new CustomEvent('dxlt:set-symbol', { detail: { symbol: sym } }));
-      } catch(e){
-        // fallback: just set the raw text
-        const sym = q.toUpperCase();
-        chip.textContent = sym;
-        window.CURRENT = Object.assign({}, window.CURRENT, { symbol: sym });
-        window.dispatchEvent(new CustomEvent('dxlt:set-symbol', { detail: { symbol: sym } }));
-      }
-    });
-  }
+  setBtn?.addEventListener('click', ()=> setSymbol(input.value.trim()));
+  input?.addEventListener('keydown',(e)=>{ if(e.key==='Enter') setSymbol(input.value.trim()); });
 })();
 </script>
 
-<!-- PULSE LIVE (ECG + price/trend/vol + sparks from /api/cg/top) -->
+<!-- PULSE LIVE (ECG + sparks) -->
 <script>
 (() => {
   const $ = (s) => document.querySelector(s);
@@ -364,203 +342,94 @@
   const cSV  = $('#sparkVol');
   const cST  = $('#sparkTrend');
 
-  const S = {
-    symbol: 'BTCUSDT',
-    priceSpark: [],
-    volSpark: [],
-    trendSpark: [],
-    maxSpark: 80,
-    bpm: 80,
-    state: 'steady'
-  };
+  const S = { symbol:'BTCUSDT', priceSpark:[], volSpark:[], trendSpark:[], maxSpark:80, bpm:80, state:'steady' };
 
-  function getSymbol() {
-    const chip = chipSym && chipSym.textContent.trim();
+  const getSymbol = () => {
+    const chip = chipSym?.textContent.trim();
     if (chip && chip !== '—') return chip.toUpperCase();
     if (window.CURRENT?.symbol) return String(window.CURRENT.symbol).toUpperCase();
     return S.symbol;
-  }
-  function baseFromPair(sym) {
+  };
+  const baseFromPair = (sym) => {
     const m = String(sym).toUpperCase().match(/^([A-Z0-9]+?)(USDT|USD|EUR|GBP|BTC|ETH)$/);
     return (m ? m[1] : sym).toLowerCase();
-  }
+  };
 
-  async function fetchTop() {
-    const r = await fetch('/api/cg/top?limit=250', { cache: 'no-store' });
-    if (!r.ok) throw new Error('cg/top '+r.status);
+  async function fetchTop(){
+    const r = await fetch('/api/cg/top?limit=250', { cache:'no-store' });
+    if(!r.ok) throw new Error('cg/top '+r.status);
     return r.json();
   }
-  function pickCoin(list, baseLower) {
-    let coin = list.find(c => (c.symbol||'').toLowerCase() === baseLower);
-    if (!coin) coin = list.find(c => (c.name||'').toLowerCase().startsWith(baseLower));
-    return coin || null;
-  }
+  const pickCoin = (list, baseLower) => list.find(c => (c.symbol||'').toLowerCase()===baseLower) || list.find(c => (c.name||'').toLowerCase().startsWith(baseLower)) || null;
 
-  function fmt(n, dp=2) {
-    if (n == null || !isFinite(n)) return '—';
-    return Number(n).toLocaleString(undefined, { minimumFractionDigits: dp, maximumFractionDigits: dp });
-  }
-  function badgeTrend(p1h, p24h) {
-    if (p1h > 0.8 && p24h > 1) return 'UP';
-    if (p1h < -0.8 && p24h < -1) return 'DOWN';
-    return 'SIDE';
-  }
-  function badgeRegime(vol) {
-    if (vol > 4) return 'HIGH VOL';
-    if (vol > 2) return 'MED VOL';
-    return 'LOW VOL';
-  }
-  function badgeRisk(p24h, vol) {
-    const score = Math.abs(p24h) * 0.6 + vol * 0.4;
-    if (score >= 8) return 'ELEVATED';
-    if (score >= 4) return 'MODERATE';
-    return 'CALM';
-  }
+  const fmt = (n,dp=2)=> (n==null||!isFinite(n)) ? '—' : Number(n).toLocaleString(undefined,{minimumFractionDigits:dp,maximumFractionDigits:dp});
+  const badgeTrend=(p1h,p24h)=> p1h>0.8&&p24h>1?'UP':(p1h<-0.8&&p24h<-1?'DOWN':'SIDE');
+  const badgeRegime=(v)=> v>4?'HIGH VOL':v>2?'MED VOL':'LOW VOL';
+  const badgeRisk=(p24,vol)=> (Math.abs(p24)*.6+vol*.4)>=8?'ELEVATED':(Math.abs(p24)*.6+vol*.4)>=4?'MODERATE':'CALM';
 
-  function setBadges(coin) {
+  function setBadges(coin){
     const p1h  = coin.price_change_percentage_1h_in_currency ?? 0;
     const p24h = coin.price_change_percentage_24h_in_currency ?? 0;
-    const vol  = Math.abs(p1h) * 1.2 + Math.abs(p24h) * 0.5;
+    const vol  = Math.abs(p1h)*1.2 + Math.abs(p24h)*0.5;
 
-    if (trendEl)  trendEl.textContent  = `Trend: ${badgeTrend(p1h, p24h)}`;
-    if (regimeEl) regimeEl.textContent = `Regime: ${badgeRegime(vol)}`;
-    if (riskEl)   riskEl.textContent   = `Risk: ${badgeRisk(p24h, vol)}`;
+    trendEl && (trendEl.textContent = `Trend: ${badgeTrend(p1h,p24h)}`);
+    regimeEl && (regimeEl.textContent = `Regime: ${badgeRegime(vol)}`);
+    riskEl   && (riskEl.textContent   = `Risk: ${badgeRisk(p24h,vol)}`);
 
-    const base = 70;
-    const bpm  = Math.max(55, Math.min(170, base + p24h*2 + vol*2));
-    S.bpm   = bpm;
-    S.state = (p24h > 1.5 ? 'surge' : p24h < -1.5 ? 'stress' : 'steady');
-    if (chipBpm)   chipBpm.textContent   = Math.round(bpm);
-    if (chipState) chipState.textContent = S.state.toUpperCase();
+    const bpm = Math.max(55, Math.min(170, 70 + p24h*2 + vol*2));
+    S.bpm = bpm;
+    S.state = (p24h>1.5?'surge':(p24h<-1.5?'stress':'steady'));
+    chipBpm   && (chipBpm.textContent   = Math.round(bpm));
+    chipState && (chipState.textContent = S.state.toUpperCase());
   }
 
-  function updateInfo(coin, sym) {
-    if (titleSym) titleSym.textContent = sym;
-    if (subEl)    subEl.textContent    = coin.name ? `${coin.name} — rank #${coin.market_cap_rank}` : '—';
-    if (priceEl)  priceEl.textContent  = coin.current_price != null ? `$${fmt(coin.current_price, 2)}` : '—';
+  function updateInfo(coin, sym){
+    titleSym && (titleSym.textContent = sym);
+    subEl    && (subEl.textContent    = coin.name ? `${coin.name} — rank #${coin.market_cap_rank}` : '—');
+    priceEl  && (priceEl.textContent  = coin.current_price!=null ? `$${fmt(coin.current_price,2)}` : '—');
   }
 
-  function sizeCanvas(cv, w, h) {
-    const dpr = window.devicePixelRatio || 1;
-    cv.width  = Math.floor(w * dpr);
-    cv.height = Math.floor(h * dpr);
-    cv.style.width  = w + 'px';
-    cv.style.height = h + 'px';
-    const ctx = cv.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return ctx;
-  }
-  function drawSpark(cv, values, color='#22d3ee') {
-    if (!cv || values.length < 2) return;
-    const W = Math.max(cv.clientWidth || 180, 160);
-    const H = Math.max(cv.clientHeight || 60, 48);
-    const ctx = sizeCanvas(cv, W, H);
+  function sizeCanvas(cv,w,h){ const dpr=window.devicePixelRatio||1; cv.width=Math.floor(w*dpr); cv.height=Math.floor(h*dpr); cv.style.width=w+'px'; cv.style.height=h+'px'; const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); return ctx; }
+  function drawSpark(cv, vals, color='#22d3ee'){
+    if(!cv||vals.length<2) return;
+    const W=Math.max(cv.clientWidth||180,160), H=Math.max(cv.clientHeight||60,48), ctx=sizeCanvas(cv,W,H);
     ctx.clearRect(0,0,W,H);
-
-    const min = Math.min(...values), max = Math.max(...values);
-    const pad = 6, span = (max - min) || 1;
-    ctx.strokeStyle = 'rgba(148,163,184,.12)';
-    ctx.beginPath(); ctx.moveTo(pad, H-1.5); ctx.lineTo(W-pad, H-1.5); ctx.stroke();
-
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = color;
-    ctx.beginPath();
-    values.forEach((v,i) => {
-      const x = pad + (W-2*pad) * (i/(values.length-1));
-      const y = H - pad - (H-2*pad) * ((v - min) / span);
-      i ? ctx.lineTo(x,y) : ctx.moveTo(x,y);
-    });
+    const min=Math.min(...vals), max=Math.max(...vals), pad=6, span=(max-min)||1;
+    ctx.strokeStyle='rgba(148,163,184,.12)'; ctx.beginPath(); ctx.moveTo(pad,H-1.5); ctx.lineTo(W-pad,H-1.5); ctx.stroke();
+    ctx.lineWidth=2; ctx.strokeStyle=color; ctx.beginPath();
+    vals.forEach((v,i)=>{const x=pad+(W-2*pad)*(i/(vals.length-1)); const y=H-pad-(H-2*pad)*((v-min)/span); i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
     ctx.stroke();
   }
 
-  const ECG = (() => {
-    let t0 = 0, raf = 0;
-    function draw(cv, bpm, mode='steady') {
-      const W = cv.clientWidth || 880, H = Math.max(cv.clientHeight || 220, 160);
-      const ctx = sizeCanvas(cv, W, H);
-      ctx.clearRect(0,0,W,H);
-      const mid = H * 0.6;
-      const msPerBeat = 60000 / Math.max(40, Math.min(200, bpm));
-      const now = performance.now();
-      if (!t0) t0 = now;
-      const phase = ((now - t0) % msPerBeat) / msPerBeat;
+  const ECG=(()=>{let t0=0,raf=0;function draw(cv,bpm,mode='steady'){const W=cv.clientWidth||880,H=Math.max(cv.clientHeight||220,160),ctx=sizeCanvas(cv,W,H);ctx.clearRect(0,0,W,H);const mid=H*.6,msPer=60000/Math.max(40,Math.min(200,bpm)),now=performance.now();if(!t0)t0=now;const phase=((now-t0)%msPer)/msPer;ctx.strokeStyle='rgba(34,211,238,.15)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,mid);ctx.lineTo(W,mid);ctx.stroke();ctx.strokeStyle='#22d3ee';ctx.lineWidth=2;ctx.beginPath();const spikes=mode==='surge'?2:mode==='stress'?0.5:1;for(let x=0;x<=W;x++){const p=(phase+x/W)%1;const beat= p<.08?0 : p<.12?(p-.1)*-900 : p<.16?(p-.14)*900 : Math.sin((p-.16)*Math.PI*2*spikes)*.2; const amp=mode==='stress'?26:mode==='surge'?34:30; const y=mid-beat*amp; x?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.stroke();}function loop(cv,bpmFn,modeFn){cancelAnimationFrame(raf);const tick=()=>{draw(cv,bpmFn(),modeFn());raf=requestAnimationFrame(tick)};raf=requestAnimationFrame(tick);}return{loop};})();
 
-      ctx.strokeStyle = 'rgba(34,211,238,.15)';
-      ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(0, mid); ctx.lineTo(W, mid); ctx.stroke();
-
-      ctx.strokeStyle = '#22d3ee';
-      ctx.lineWidth = 2;
-
-      ctx.beginPath();
-      const spikes = mode === 'surge' ? 2 : mode === 'stress' ? 0.5 : 1;
-      for (let x = 0; x <= W; x++) {
-        const p   = (phase + x / W) % 1;
-        const beatShape =
-          p < 0.08 ? 0 :
-          p < 0.12 ? (p-0.1)*-900 :
-          p < 0.16 ? (p-0.14)*900 :
-          Math.sin((p-0.16) * Math.PI * 2 * spikes) * 0.2;
-        const amp = mode === 'stress' ? 26 : mode === 'surge' ? 34 : 30;
-        const y = mid - beatShape * amp;
-        x ? ctx.lineTo(x,y) : ctx.moveTo(x,y);
-      }
-      ctx.stroke();
-    }
-    function loop(cv, bpmFn, modeFn) {
-      cancelAnimationFrame(raf);
-      const tick = () => {
-        draw(cv, bpmFn(), modeFn());
-        raf = requestAnimationFrame(tick);
-      };
-      raf = requestAnimationFrame(tick);
-    }
-    return { loop };
-  })();
-
-  async function tick() {
-    const sym = getSymbol();
-    const base = baseFromPair(sym);
-    try {
+  async function tick(){
+    const sym = getSymbol(), base = baseFromPair(sym);
+    try{
       const top = await fetchTop();
       const coin = pickCoin(top, base);
-      if (!coin) throw new Error('coin not found for '+sym);
+      if(!coin) throw new Error('coin not found for '+sym);
 
-      const price = Number(coin.current_price) || 0;
-      const vol   = Math.abs(Number(coin.price_change_percentage_24h_in_currency) || 0);
-      const trend = Number(coin.price_change_percentage_1h_in_currency) || 0;
+      const price = Number(coin.current_price)||0;
+      const vol   = Math.abs(Number(coin.price_change_percentage_24h_in_currency)||0);
+      const trend = Number(coin.price_change_percentage_1h_in_currency)||0;
 
-      S.priceSpark.push(price);
-      S.volSpark.push(vol);
-      S.trendSpark.push(trend);
-      if (S.priceSpark.length > S.maxSpark) S.priceSpark.shift();
-      if (S.volSpark.length   > S.maxSpark) S.volSpark.shift();
-      if (S.trendSpark.length > S.maxSpark) S.trendSpark.shift();
+      S.priceSpark.push(price); S.volSpark.push(vol); S.trendSpark.push(trend);
+      if(S.priceSpark.length>S.maxSpark) S.priceSpark.shift();
+      if(S.volSpark.length  >S.maxSpark) S.volSpark.shift();
+      if(S.trendSpark.length>S.maxSpark) S.trendSpark.shift();
 
-      updateInfo(coin, sym);
-      setBadges(coin);
+      updateInfo(coin, sym); setBadges(coin);
+      drawSpark(cSP,S.priceSpark,'#22d3ee'); drawSpark(cSV,S.volSpark,'#a78bfa'); drawSpark(cST,S.trendSpark,'#34d399');
 
-      drawSpark(cSP, S.priceSpark, '#22d3ee');
-      drawSpark(cSV, S.volSpark,   '#a78bfa');
-      drawSpark(cST, S.trendSpark, '#34d399');
-
-      if (chipSym && chipSym.textContent.trim() === '—') chipSym.textContent = sym;
-    } catch (e) {
-      console.warn('pulse-live tick error', e);
-    }
+      if (chipSym && chipSym.textContent.trim()==='—') chipSym.textContent=sym;
+    }catch(e){ console.warn('pulse-live tick error', e); }
   }
 
   window.addEventListener('dxlt:set-symbol', tick);
+  cECG && ECG.loop(cECG, ()=>S.bpm, ()=>S.state);
 
-  if (cECG) {
-    ECG.loop(cECG, () => S.bpm, () => S.state);
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    if (chipSym && chipSym.textContent.trim() !== '—') S.symbol = chipSym.textContent.trim().toUpperCase();
-    tick();
-    setInterval(tick, 15000);
-  });
+  document.addEventListener('DOMContentLoaded', ()=>{ if (chipSym && chipSym.textContent.trim()!=='—') S.symbol = chipSym.textContent.trim().toUpperCase(); tick(); setInterval(tick,15000); });
 })();
 </script>
 
@@ -579,14 +448,11 @@
   const HIST_N = 20;
 
   function getSymbol(){
-    const chip = $('#pulseSymbol');
-    const t = chip && chip.textContent.trim();
+    const t = document.getElementById('pulseSymbol')?.textContent.trim();
     if (t && t !== '—') return t.toUpperCase();
     if (window.CURRENT?.symbol) return String(window.CURRENT.symbol).toUpperCase();
-    const h = $('#pdSymbol');
-    const ht = h && h.textContent.trim();
-    if (ht && ht !== '—') return ht.toUpperCase();
-    return 'BTCUSDT';
+    const ht = document.getElementById('pdSymbol')?.textContent.trim();
+    return (ht && ht !== '—') ? ht.toUpperCase() : 'BTCUSDT';
   }
 
   function sizeCanvas(cv, w, h){
@@ -635,26 +501,22 @@
     const H = 44;
     const ctx = sizeCanvas(cv, W, H);
     ctx.clearRect(0,0,W,H);
-
     if (!arr.length) return;
-    const n = arr.length;
-    const min = 0, max = 100;
-    const step = W / Math.max(1, n-1);
 
+    const step = W / Math.max(1, arr.length-1);
     ctx.strokeStyle='rgba(148,163,184,.12)';
     ctx.beginPath(); ctx.moveTo(0,H-1.5); ctx.lineTo(W,H-1.5); ctx.stroke();
 
     ctx.strokeStyle='#22d3ee'; ctx.lineWidth=2;
     ctx.beginPath();
-    for (let i=0;i<n;i++){
+    for (let i=0;i<arr.length;i++){
       const x = i*step;
-      const y = H - (arr[i]-min)/(max-min) * (H-4) - 2;
+      const y = H - (arr[i]/100) * (H-4) - 2;
       i?ctx.lineTo(x,y):ctx.moveTo(x,y);
     }
     ctx.stroke();
 
-    ctx.strokeStyle='rgba(34,211,238,.35)';
-    ctx.lineWidth=6; ctx.stroke();
+    ctx.strokeStyle='rgba(34,211,238,.35)'; ctx.lineWidth=6; ctx.stroke();
   }
 
   async function loadDepth(sym){
@@ -666,32 +528,191 @@
       const bid = Number.isFinite(j.bidPct) ? j.bidPct : 0;
       const ask = Number.isFinite(j.askPct) ? j.askPct : 0;
 
-      if (bidEl) bidEl.textContent = `${bid.toFixed(0)}%`;
-      if (askEl) askEl.textContent = `${ask.toFixed(0)}%`;
-      if (venueEl) venueEl.textContent = `• ${sym} • source: ${j.venue || '—'} • ${tz}`;
+      bidEl && (bidEl.textContent = `${bid.toFixed(0)}%`);
+      askEl && (askEl.textContent = `${ask.toFixed(0)}%`);
+      venueEl && (venueEl.textContent = `• ${sym} • source: ${j.venue || '—'} • ${tz}`);
 
-      if (gaugeCv) drawGauge(gaugeCv, bid);
+      gaugeCv && drawGauge(gaugeCv, bid);
 
       hist.push(bid); while (hist.length > HIST_N) hist.shift();
-      if (sparkCv) drawSpark(sparkCv, hist);
-    }catch(e){
-      console.warn('depth fetch error', e);
-    }
+      sparkCv && drawSpark(sparkCv, hist);
+    }catch(e){ console.warn('depth fetch error', e); }
   }
 
-  function tick(){ loadDepth(getSymbol()); }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    tick();
-    setInterval(tick, 15000);
-  });
+  const tick = ()=> loadDepth((()=>{const t=document.getElementById('pulseSymbol')?.textContent.trim(); if(t&&t!=='—') return t.toUpperCase(); return window.CURRENT?.symbol?.toUpperCase() || 'BTCUSDT';})());
+  document.addEventListener('DOMContentLoaded', ()=>{ tick(); setInterval(tick,15000); });
+  window.addEventListener('dxlt:set-symbol', tick);
 
   const symNode = document.getElementById('pulseSymbol');
   if (symNode && 'MutationObserver' in window){
-    const mo = new MutationObserver(() => tick());
+    const mo = new MutationObserver(()=>tick());
     mo.observe(symNode, { childList:true, characterData:true, subtree:true });
   }
+})();
+</script>
+
+<!-- Positions & Liquidity live wiring (donut + heatmaps) -->
+<script id="positions-wire">
+(() => {
+  const $ = (s) => document.querySelector(s);
+
+  // UI elements
+  const gaugeCv    = $('#ppGauge');
+  const longLbl    = $('#ppLong');
+  const shortLbl   = $('#ppShort');
+  const biasLbl    = $('#ppBias');
+  const longHeatCv = $('#ppLongHeat');
+  const shortHeatCv= $('#ppShortHeat');
+  const longPrice  = $('#ppLongPrice');
+  const shortPrice = $('#ppShortPrice');
+  const tfWrap     = $('#ppTf');
+  const tfOut      = $('#ppTfLabel');
+
+  // timeframe is visual only for now (order book is real-time)
+  let tfMin = 5;
+
+  tfWrap?.addEventListener('click', (e) => {
+    const b = e.target.closest('button.seg');
+    if (!b) return;
+    tfWrap.querySelectorAll('button.seg').forEach(x => x.classList.toggle('on', x === b));
+    tfMin = +b.dataset.min || 5;
+    tfOut && (tfOut.textContent = (tfMin === 60 ? '1h' : `${tfMin}m`));
+    tick(); // refresh immediately
+  });
+
+  const currentSymbol = () => {
+    const chip = document.getElementById('pulseSymbol')?.textContent.trim();
+    if (chip && chip !== '—') return chip.toUpperCase();
+    if (window.CURRENT?.symbol) return String(window.CURRENT.symbol).toUpperCase();
+    return 'BTCUSDT';
+  };
+
+  // Drawing helpers
+  function sizeCanvas(cv, w, h){
+    const dpr = window.devicePixelRatio || 1;
+    cv.width  = Math.floor(w * dpr);
+    cv.height = Math.floor(h * dpr);
+    cv.style.width = w + 'px'; cv.style.height = h + 'px';
+    const ctx = cv.getContext('2d');
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    return ctx;
+  }
+
+  function drawDonut(cv, longPct){
+    if (!cv) return;
+    const W = Math.max(cv.clientWidth || 420, 320);
+    const H = Math.max(cv.clientHeight || 220, 160);
+    const R = Math.min(W, H) * 0.36;
+    const cx = W*0.4, cy = H*0.58;
+
+    const ctx = sizeCanvas(cv, W, H);
+    ctx.clearRect(0,0,W,H);
+
+    // ring bg
+    ctx.lineWidth = 16;
+    ctx.strokeStyle = 'rgba(148,163,184,.18)';
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.stroke();
+
+    // long arc
+    const theta = Math.max(0, Math.min(100, longPct)) / 100 * Math.PI * 2;
+    const gradG = ctx.createLinearGradient(cx-R,0,cx+R,0);
+    gradG.addColorStop(0,'#16a34a'); gradG.addColorStop(1,'#22d3ee');
+    ctx.strokeStyle = gradG;
+    ctx.beginPath(); ctx.arc(cx,cy,R,-Math.PI/2,-Math.PI/2 + theta,false); ctx.stroke();
+
+    // short arc
+    const gradR = ctx.createLinearGradient(cx+R,0,cx-R,0);
+    gradR.addColorStop(0,'#ef4444'); gradR.addColorStop(1,'#f59e0b');
+    ctx.strokeStyle = gradR;
+    ctx.beginPath(); ctx.arc(cx,cy,R,-Math.PI/2 + theta,-Math.PI/2 + Math.PI*2,false); ctx.stroke();
+
+    // center dot
+    ctx.fillStyle = '#94a3b8';
+    ctx.beginPath(); ctx.arc(cx,cy,3,0,Math.PI*2); ctx.fill();
+  }
+
+  function drawHeatmap(cv, levels, last, side){
+    if (!cv || !levels?.length) return;
+    const W = Math.max(cv.clientWidth || 860, 400);
+    const H = Math.max(cv.clientHeight || 200, 120);
+    const ctx = sizeCanvas(cv, W, H);
+    ctx.clearRect(0,0,W,H);
+
+    // Sort: long shows bids below last (desc), short shows asks above last (asc)
+    const filtered = side === 'long'
+      ? levels.filter(([p]) => p < last).sort((a,b)=>b[0]-a[0])
+      : levels.filter(([p]) => p > last).sort((a,b)=>a[0]-b[0]);
+
+    if (!filtered.length) return;
+
+    const maxSize = Math.max(...filtered.map(l => l[1])) || 1;
+    const pad = 10;
+    const rowH = (H - pad*2) / Math.min(filtered.length, 40);
+    const colW = W - pad*2;
+
+    filtered.slice(0, 40).forEach((lv, i) => {
+      const [, size] = lv;
+      const x = pad, y = pad + i*rowH + 2;
+      const k = Math.pow(size / maxSize, 0.6);
+      const col = side === 'long'
+        ? `rgba(34,197,94,${0.15 + 0.65*k})`
+        : `rgba(239,68,68,${0.15 + 0.65*k})`;
+      ctx.fillStyle = col;
+      ctx.fillRect(x, y, colW * k, rowH - 4);
+    });
+
+    ctx.strokeStyle = 'rgba(148,163,184,.14)';
+    ctx.beginPath(); ctx.moveTo(pad, H-1.5); ctx.lineTo(W-pad, H-1.5); ctx.stroke();
+  }
+
+  function nearestLiquidity(levels, last, side){
+    const pool = side === 'long'
+      ? levels.filter(([p]) => p < last)
+      : levels.filter(([p]) => p > last);
+    if (!pool.length) return null;
+    const scored = pool.map(([p, s]) => ({ p, score: s / (1 + Math.abs(p-last)) }));
+    scored.sort((a,b) => b.score - a.score);
+    return scored[0].p;
+  }
+
+  async function fetchBook(sym){
+    const r = await fetch(`/api/depth?symbol=${encodeURIComponent(sym)}&levels=80&limit=120&venue=smart&full=1&cb=${Date.now()}`, { cache:'no-store' });
+    if (!r.ok) throw new Error('depth '+r.status);
+    return r.json();
+  }
+
+  async function tick(){
+    const sym = currentSymbol();
+    try{
+      const book = await fetchBook(sym);
+      const longPct  = Number(book.bidPct) || 0;
+      const shortPct = Number(book.askPct) || 0;
+      const last     = Number(book.last) || (book.bids?.[0]?.[0] + book.asks?.[0]?.[0])/2;
+
+      drawDonut(gaugeCv, longPct);
+      longLbl  && (longLbl.textContent  = `${longPct.toFixed(0)}%`);
+      shortLbl && (shortLbl.textContent = `${shortPct.toFixed(0)}%`);
+      biasLbl  && (biasLbl.textContent  = longPct>shortPct ? 'Long' : longPct<shortPct ? 'Short' : 'Neutral');
+
+      if (book.bids && book.asks){
+        drawHeatmap(longHeatCv,  book.bids, last, 'long');
+        drawHeatmap(shortHeatCv, book.asks, last, 'short');
+        const nLong  = nearestLiquidity(book.bids, last, 'long');
+        const nShort = nearestLiquidity(book.asks, last, 'short');
+        longPrice  && (longPrice.textContent  = nLong  ? nLong.toLocaleString()  : '—');
+        shortPrice && (shortPrice.textContent = nShort ? nShort.toLocaleString() : '—');
+      }
+    }catch(e){ console.warn('positions-wire', e); }
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{ tfOut && (tfOut.textContent = (tfMin===60?'1h':`${tfMin}m`)); tick(); setInterval(tick, 12000); });
   window.addEventListener('dxlt:set-symbol', tick);
+
+  const symNode = document.getElementById('pulseSymbol');
+  if (symNode && 'MutationObserver' in window){
+    const mo = new MutationObserver(()=>tick());
+    mo.observe(symNode, { childList:true, characterData:true, subtree:true });
+  }
 })();
 </script>
 

@@ -1,82 +1,76 @@
-const { helpers } = require("./_common.js");
-
-async function fetchBinance(symbol, limit=50){
-  const url = `https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=${limit}`;
-  const res = await helpers.safeFetch(url);
-  if (!res || !res.ok) return { bids:[], asks:[] };
-  const j = await res.json();
-  return { bids: j.bids || [], asks: j.asks || [] };
-}
-async function fetchOKX(symbol, limit=50){
-  const inst = symbol.replace("USDT","-USDT");
-  const url  = `https://www.okx.com/api/v5/market/books?instId=${inst}&sz=${limit}`;
-  const res  = await helpers.safeFetch(url);
-  if (!res || !res.ok) return { bids:[], asks:[] };
-  const j    = await res.json();
-  const d    = j.data?.[0] || { bids:[], asks:[] };
-  return { bids: d.bids || [], asks: d.asks || [] };
-}
-async function fetchBybit(symbol, limit=50){
-  const url = `https://api.bybit.com/v5/market/orderbook?category=linear&symbol=${symbol}&limit=${limit}`;
-  const res = await helpers.safeFetch(url);
-  if (!res || !res.ok) return { bids:[], asks:[] };
-  const j   = await res.json();
-  const list= j.result?.list || [];
-  const bids= list.filter(x=>x.side==="Buy").map(x=>[x.price,x.size]);
-  const asks= list.filter(x=>x.side==="Sell").map(x=>[x.price,x.size]);
-  return { bids, asks };
-}
-
-function sumNotional(levels, take=25){
-  return (levels||[]).slice(0,take).reduce((a,[p,q]) => a + ((parseFloat(p)||0)*(parseFloat(q)||0)), 0);
-}
-const FETCHERS = {
-  binance: fetchBinance,
-  okx:     fetchOKX,
-  bybit:   fetchBybit
-};
-
+// netlify/functions/depth.js
 exports.handler = async (event) => {
-  if (event.httpMethod === "OPTIONS") return helpers.preflight(event);
-  const headers = { ...helpers.corsHeaders(event.headers.origin || event.headers.Origin || ""), ...helpers.cacheHeaders(10,20) };
+  const params = new URLSearchParams(event.queryStringParameters || {});
+  const symbol = (params.get("symbol") || "BTCUSDT").toUpperCase();
+  const levels = Math.min(+params.get("levels") || 25, 200);
+  const venueReq = (params.get("venue") || "smart").toLowerCase(); // okx | binance | smart
+  const wantFull = params.get("full") === "1";
+  const limit = Math.min(+params.get("limit") || 50, 500);
 
-  try{
-    const url = new URL(event.rawUrl);
-    const q   = Object.fromEntries(url.searchParams);
-    const symbol = (q.symbol || "BTCUSDT").toUpperCase();
-    const limit  = Math.min(parseInt(q.limit || "50",10), 100);
-    const levels = Math.min(parseInt(q.levels|| "25",10), limit);
-    const prefer = (q.venue || "smart").toLowerCase();
+  const tryOkx = async () => {
+    const instId = symbol.replace("USDT", "-USDT");
+    const url = `https://www.okx.com/api/v5/market/books?instId=${instId}&sz=${Math.max(levels, 25)}`;
+    const r = await fetch(url, { headers: { "User-Agent": "dxlt" } });
+    if (!r.ok) throw new Error("okx " + r.status);
+    const j = await r.json();
+    const d = j?.data?.[0];
+    if (!d) throw new Error("okx empty");
+    const map = (arr) => arr.slice(0, levels).map(a => [Number(a[0]), Number(a[1])]);
+    const bids = map(d.bids);
+    const asks = map(d.asks);
+    const last = Number(d?.ts ? d?.px || bids[0]?.[0] || asks[0]?.[0] : bids[0]?.[0] || asks[0]?.[0]);
+    return { venue: "okx", bids, asks, last };
+  };
 
-    const order = prefer === "smart"
-      ? ["binance","okx","bybit"]
-      : [prefer, ...["binance","okx","bybit"].filter(v => v !== prefer)];
+  const tryBinance = async () => {
+    const url = `https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=${Math.max(levels, 50)}`;
+    const r = await fetch(url, { headers: { "User-Agent": "dxlt" } });
+    if (!r.ok) throw new Error("binance " + r.status);
+    const j = await r.json();
+    const map = (arr) => arr.slice(0, levels).map(a => [Number(a[0]), Number(a[1])]);
+    const bids = map(j.bids);
+    const asks = map(j.asks);
+    const mid  = (bids[0]?.[0] && asks[0]?.[0]) ? (bids[0][0] + asks[0][0]) / 2 : (bids[0]?.[0] || asks[0]?.[0]);
+    return { venue: "binance", bids, asks, last: mid };
+  };
 
-    let used = null, book = { bids:[], asks:[] };
-    for (const v of order) {
-      const f = FETCHERS[v];
-      try {
-        const b = await f(symbol, limit);
-        if ((b.bids?.length || 0) > 0 && (b.asks?.length || 0) > 0) { used = v; book = b; break; }
-      } catch (_) {}
+  let book;
+  try {
+    if (venueReq === "okx") book = await tryOkx();
+    else if (venueReq === "binance") book = await tryBinance();
+    else {
+      // smart fallback: OKX → Binance
+      try { book = await tryOkx(); }
+      catch { book = await tryBinance(); }
     }
-    if (!used) { used = "none"; } // everything failed
+  } catch (e) {
+    return {
+      statusCode: 502,
+      body: JSON.stringify({ error: e.message || String(e) })
+    };
+  }
 
-    const bidNotional = sumNotional(book.bids, levels);
-    const askNotional = sumNotional(book.asks, levels);
-    const total = (bidNotional + askNotional) || 1;
+  // bid/ask %
+  const sum = (arr, n) => arr.slice(0, n).reduce((s, x) => s + (x[1] || 0), 0);
+  const n = Math.min(levels, book.bids.length, book.asks.length);
+  const bidNotional = sum(book.bids, n);
+  const askNotional = sum(book.asks, n);
+  const total = bidNotional + askNotional || 1;
+  const bidPct = +(bidNotional / total * 100).toFixed(2);
+  const askPct = +(askNotional / total * 100).toFixed(2);
 
+  const base = { venue: book.venue, symbol, levels: n, bidPct, askPct };
+
+  if (wantFull) {
     return {
       statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        venue: used,
-        symbol, levels,
-        bidPct: +(bidNotional/total*100).toFixed(2),
-        askPct: +(askNotional/total*100).toFixed(2)
-      })
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ...base, last: book.last, bids: book.bids.slice(0, limit), asks: book.asks.slice(0, limit) })
     };
-  }catch(err){
-    return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
   }
+  return {
+    statusCode: 200,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(base)
+  };
 };
