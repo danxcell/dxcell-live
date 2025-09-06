@@ -1,5 +1,5 @@
-
-// live-widgets.js — RESET (robust): rebuild TradingView widget on each symbol change
+﻿
+// live-widgets.js â€” RESET (robust): rebuild TradingView widget on each symbol change
 (function(){
   const $  = (s)=>document.querySelector(s);
   const $$ = (s)=>Array.from(document.querySelectorAll(s));
@@ -89,7 +89,7 @@ async function fetchChangeByPeriod(sym, period, opts = {}){
     try{ window.dispatchEvent(new CustomEvent('dxlt:symbol',{detail:{sym:(sym||'BTC').toUpperCase()}})); }catch(e){}
 
     const s = (sym||'BTC').toUpperCase();
-    const title = $("#chartTitle"); if (title) title.textContent = "Chart — " + s;
+    const title = $("#chartTitle"); if (title) title.textContent = "Chart â€” " + s;
     mountTV(tvSymbol(s));
   };
 
@@ -108,7 +108,7 @@ async function fetchChangeByPeriod(sym, period, opts = {}){
     }
   }
   function fmt(p){
-    if (!isFinite(p)) return '—';
+    if (!isFinite(p)) return 'â€”';
     if (p>=1000) return p.toLocaleString(undefined,{maximumFractionDigits:0});
     if (p>=1) return p.toLocaleString(undefined,{maximumFractionDigits:2});
     return p.toLocaleString(undefined,{maximumFractionDigits:6});
@@ -142,7 +142,7 @@ async function renderTable(){
     .slice(0, 15);
 
   function fmt(p){
-    if (!Number.isFinite(p)) return '—';
+    if (!Number.isFinite(p)) return 'â€”';
     if (p>=1000) return p.toLocaleString(undefined,{maximumFractionDigits:0});
     if (p>=1) return p.toLocaleString(undefined,{maximumFractionDigits:2});
     return p.toLocaleString(undefined,{maximumFractionDigits:6});

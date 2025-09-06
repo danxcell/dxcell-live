@@ -1,4 +1,4 @@
-// safety.js — LIVE mode (no request blocking)
+﻿// safety.js â€” LIVE mode (no request blocking)
 (function(){
   try{
     window.SAFE_MODE = false;

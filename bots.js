@@ -1,4 +1,4 @@
-
+﻿
 (function(){
   function openModal(id){
     const el = document.getElementById(id);
