@@ -247,6 +247,7 @@
 
 <script src="./feeds.js"></script>
 
+<!-- Routes + basic Set broadcast -->
 <script>
 (() => {
   const routes = {
@@ -281,6 +282,64 @@
       window.dispatchEvent(new CustomEvent('dxlt:set-symbol', { detail: { symbol: s }}));
     });
     search.addEventListener('keydown', (e)=>{ if(e.key==='Enter') setBtn.click(); });
+  }
+})();
+</script>
+
+<!-- Search+ resolver & suggestions you asked to add -->
+<script>
+(() => {
+  const input = document.getElementById('pulseSearch');
+  const list  = document.getElementById('suggestList');
+  const setBtn= document.getElementById('pulseSet');
+  const chip  = document.getElementById('pulseSymbol');
+
+  // simple debounce
+  let t = null;
+  function debounce(fn, ms=150){ clearTimeout(t); t=setTimeout(fn, ms); }
+
+  async function loadSuggestions(q){
+    if (!list) return;
+    try {
+      const r = await fetch(`/api/symbols?q=${encodeURIComponent(q||'')}`, { cache:'no-store' });
+      const j = await r.json();
+      list.innerHTML = '';
+      (j.items||[]).forEach(it => {
+        const opt = document.createElement('option');
+        opt.value = it.symbol; // what gets inserted if user picks it
+        opt.label = `${it.base}/${it.quote} — ${it.venues.join('/')}`;
+        opt.textContent = opt.label;
+        list.appendChild(opt);
+      });
+    } catch(e){ /* silent */ }
+  }
+
+  if (input) {
+    input.addEventListener('input', () => debounce(() => loadSuggestions(input.value), 120));
+    // Preload popular on focus
+    input.addEventListener('focus', () => { if (!list.options.length) loadSuggestions(''); });
+  }
+
+  if (setBtn && input && chip) {
+    setBtn.addEventListener('click', async () => {
+      const q = (input.value||'').trim();
+      if (!q) return;
+      try {
+        const r = await fetch(`/api/resolve?q=${encodeURIComponent(q)}&cb=${Date.now()}`, { cache:'no-store' });
+        const j = await r.json();
+        const sym = (j.symbol || q).toUpperCase();
+        chip.textContent = sym;
+        // make it visible to all existing listeners (ECG/Depth/etc.)
+        window.CURRENT = Object.assign({}, window.CURRENT, { symbol: sym });
+        window.dispatchEvent(new CustomEvent('dxlt:set-symbol', { detail: { symbol: sym } }));
+      } catch(e){
+        // fallback: just set the raw text
+        const sym = q.toUpperCase();
+        chip.textContent = sym;
+        window.CURRENT = Object.assign({}, window.CURRENT, { symbol: sym });
+        window.dispatchEvent(new CustomEvent('dxlt:set-symbol', { detail: { symbol: sym } }));
+      }
+    });
   }
 })();
 </script>
