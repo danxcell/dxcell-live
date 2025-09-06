@@ -1,8 +1,14 @@
+# netlify.toml (root of repo)
 
 [build]
-  functions = "netlify/functions"
+  publish   = "."                 # where your static files live
+  functions = "netlify/functions" # where your serverless functions live
+
+[functions]
+  node_bundler = "esbuild"        # keeps function bundles small
 
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  from   = "/api/*"
+  to     = "/.netlify/functions/:splat"
   status = 200
+  force  = true
