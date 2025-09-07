@@ -79,30 +79,39 @@
 <script src="./feeds.js"></script>
 
 <script>
-(() => {
+(function () {
   const routes = {
-    home: 'index.html',
-    pulse: 'pulse.html',
-    dex: 'dex.html',
-    wealth: 'wealth.html', defi:'defi.html', 
-    bots: 'bots.html',
-    market: 'market.html',
-    learn: 'learn.html',
-    settings: 'settings.html',
-    login: 'login.html',
-    mt: 'mt.html'
+    home:    "index.html",
+    pulse:   "pulse.html",
+    dex:     "dex.html",
+    wealth:  "wealth.html",
+    defi:    "defi.html",
+    bots:    "bots.html",
+    market:  "market.html",
+    learn:   "learn.html",
+    settings:"settings.html",
+    login:   "login.html",
+    mt:      "mt.html"
   };
-  document.querySelectorAll('.nav-btn[data-route]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const r = btn.getAttribute('data-route');
-      if (routes[r]) window.location.href = routes[r];
+
+  const here = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  document.querySelectorAll(".nav-btn[data-route]").forEach(btn => {
+    const key = btn.dataset.route;
+    btn.addEventListener("click", () => {
+      if (routes[key]) window.location.href = routes[key];
     });
+    if (routes[key] && routes[key].toLowerCase() === here) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
   });
 })();
 </script>
 
 </body>
 </html>
+
 
 
 

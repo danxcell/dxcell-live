@@ -147,257 +147,38 @@
   <footer class="dex-foot">DXLT v1.0 (scoped Dex page)</footer>
 
   <script>
-  (function(){
-    const $ = (s, root=document) => root.querySelector(s);
-    const $$ = (s, root=document) => Array.from(root.querySelectorAll(s));
+(function () {
+  const routes = {
+    home:    "index.html",
+    pulse:   "pulse.html",
+    dex:     "dex.html",
+    wealth:  "wealth.html",
+    defi:    "defi.html",
+    bots:    "bots.html",
+    market:  "market.html",
+    learn:   "learn.html",
+    settings:"settings.html",
+    login:   "login.html",
+    mt:      "mt.html"
+  };
 
-    // --- Elements
-    const chains = $('#chains');
-    const sentiment = $('#sentiment');
-    const dexPills = $('#dexPills');
-    const selectVol = $('#fVol');
-    const selectLiq = $('#fLiq');
-    const selectCap = $('#fCap');
-    const selectSort = $('#fSort');
-    const inputQ = $('#q');
-    const btnGo = $('#btnGo');
-
-    const moversGrid = $('#movers');
-    const moversFoot = $('#moversFoot');
-    const chart = $('#chart');
-    const title = $('#pairTitle');
-    const sub   = $('#pairSub');
-    const venueLinks = $('#venueLinks');
-    const facts = {
-      price: $('#fPrice'),
-      chg:   $('#fChg'),
-      liq:   $('#fLiqV'),
-      cap:   $('#fCapV'),
-      vol:   $('#fVolV'),
-      tx:    $('#fTxV'),
-    };
-
-    // --- State
-    const S = {
-      chain: 'all',
-      mode: 'gainers',
-      dexid: 'any',
-      vol: 100000,
-      liq: 100000,
-      cap: 500000,
-      sort: 'volume',
-      movers: [],
-      selected: null,
-    };
-
-    // --- Helpers
-    const money = n => {
-      const v = Number(n||0);
-      if (!isFinite(v) || v<=0) return '$0';
-      if (v >= 1e9) return '$' + (v/1e9).toFixed(2) + 'b';
-      if (v >= 1e6) return '$' + (v/1e6).toFixed(2) + 'm';
-      if (v >= 1e3) return '$' + (v/1e3).toFixed(1) + 'k';
-      return '$' + v.toLocaleString();
-    };
-    const pct = x => ((Number(x)||0) > 0 ? '+' : '') + (Number(x)||0).toFixed(2) + '%';
-
-    function chipBar(el, key){
-      el.addEventListener('click', e=>{
-        const b = e.target.closest('.chip'); if(!b) return;
-        $$('.chip', el).forEach(x=>x.classList.toggle('on', x===b));
-        S[key] = b.dataset.chain || b.dataset.mode || b.dataset.dexid || S[key];
-        runFilters();
-      });
-    }
-    chipBar(chains,'chain');
-    chipBar(sentiment,'mode');
-    chipBar(dexPills,'dexid');
-
-    [selectVol,selectLiq,selectCap,selectSort].forEach(sel=>{
-      sel.addEventListener('change', ()=>{
-        S.vol  = Number(selectVol.value);
-        S.liq  = Number(selectLiq.value);
-        S.cap  = Number(selectCap.value);
-        S.sort = selectSort.value;
-        runFilters();
-      });
+  const here = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  document.querySelectorAll(".nav-btn[data-route]").forEach(btn => {
+    const key = btn.dataset.route;
+    btn.addEventListener("click", () => {
+      if (routes[key]) window.location.href = routes[key];
     });
-
-    btnGo.addEventListener('click', ()=> runFilters(inputQ.value.trim()));
-    inputQ.addEventListener('keydown', e=>{ if(e.key==='Enter') runFilters(inputQ.value.trim()); });
-
-    // --- API
-    async function dexscreenerSearch(q='trending'){
-      const url = `https://api.dexscreener.com/latest/dex/search?q=${encodeURIComponent(q)}`;
-      const r = await fetch(url, {cache:'no-store'});
-      if (!r.ok) throw new Error('dexsearch '+r.status);
-      const j = await r.json();
-      return j.pairs || [];
+    if (routes[key] && routes[key].toLowerCase() === here) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
     }
-
-    // small helper that gets some variety when not searching specifically
-    async function seedPairs(){
-      const buckets = ['trending','hot','new','gainers','losers'];
-      const res = [];
-      for (const k of buckets){
-        try {
-          const list = await dexscreenerSearch(k);
-          res.push(...list.slice(0, 60)); // plenty to filter
-        } catch(e){}
-      }
-      return res;
-    }
-
-    // --- Core filter pipeline
-    function passChain(p){
-      if (S.chain==='all') return true;
-      return (String(p.chainId||'').toLowerCase()===S.chain.toLowerCase());
-    }
-    function passMode(p){
-      if (S.mode==='new'){
-        // under 24h age
-        return (p.pairCreatedAt && (Date.now()-Number(p.pairCreatedAt)) < 24*3600*1000);
-      }
-      if (S.mode==='hot'){
-        const tx = Number(p.txns?.h24?.buys||0)+Number(p.txns?.h24?.sells||0);
-        return tx > 500; // arbitrary "hot"
-      }
-      if (S.mode==='gainers') return (Number(p.priceChange?.h24||0) > 0);
-      if (S.mode==='losers')  return (Number(p.priceChange?.h24||0) < 0);
-      return true;
-    }
-    function passDexId(p){
-      if (S.dexid==='any') return true;
-      return String(p.dexId||'').toLowerCase().includes(S.dexid.toLowerCase());
-    }
-    function passThresholds(p){
-      const vol = Number(p.volume?.h24||0);
-      const liq = Number(p.liquidity?.usd||0);
-      const mc  = Number(p.fdv || p.marketCap || 0);
-      return (vol>=S.vol && liq>=S.liq && mc>=S.cap);
-    }
-    function sorter(a,b){
-      const m = {
-        volume: (x)=>Number(x.volume?.h24||0),
-        liquidity: (x)=>Number(x.liquidity?.usd||0),
-        mcap: (x)=>Number(x.fdv||x.marketCap||0),
-        change: (x)=>Number(x.priceChange?.h24||0),
-        txns: (x)=>Number(x.txns?.h24?.buys||0)+Number(x.txns?.h24?.sells||0),
-      }[S.sort];
-      return (m(b)-m(a));
-    }
-
-    function renderMovers(list){
-      if (!list.length){
-        moversGrid.innerHTML = `<div class="placeholder">No matches. Try lowering thresholds or switching chain/mode.</div>`;
-        moversFoot.textContent = '';
-        return;
-      }
-      moversGrid.innerHTML = list.slice(0, 48).map(p=>{
-        const ch = Number(p.priceChange?.h24||0);
-        const logo = p.info?.imageUrl || p.baseToken?.logoURI || 'https://assets.dexscreener.com/favicon.png';
-        const tx24 = Number(p.txns?.h24?.buys||0)+Number(p.txns?.h24?.sells||0);
-        return `
-          <div class="tile" data-chain="${p.chainId}" data-pair="${p.pairAddress}">
-            <img src="${logo}" class="logo" alt="">
-            <div class="meta">
-              <div class="name">${p.baseToken?.symbol||'â€”'} / ${p.quoteToken?.symbol||'â€”'}</div>
-              <div class="sub">${p.chainId} Â· ${p.dexId||''}</div>
-            </div>
-            <div class="right">
-              <div class="chg ${ch>=0?'pos':'neg'}">${pct(ch)}</div>
-              <div class="liqs">${money(p.liquidity?.usd)} liq Â· ${tx24.toLocaleString()} tx</div>
-            </div>
-          </div>`;
-      }).join('');
-      moversFoot.textContent = `${list.length.toLocaleString()} matches â€¢ Chain: ${S.chain} â€¢ Dex: ${S.dexid} â€¢ Volâ‰¥ ${money(S.vol)} â€¢ Liqâ‰¥ ${money(S.liq)} â€¢ Capâ‰¥ ${money(S.cap)}`;
-    }
-
-    function embedPair(p){
-      if (!p) return;
-      const src = `https://dexscreener.com/${p.chainId}/${p.pairAddress}?embed=1&theme=dark&trades=0`;
-      chart.src = src;
-      title.textContent = `${p.baseToken?.symbol||'â€”'}/${p.quoteToken?.symbol||'â€”'} â€¢ ${p.chainId}`;
-      sub.textContent = p.pairAddress;
-
-      facts.price.textContent = p.priceUsd ? ('$' + Number(p.priceUsd).toFixed(6)) : 'â€”';
-      facts.chg.textContent   = p.priceChange?.h24!=null ? pct(p.priceChange.h24) : 'â€”';
-      facts.liq.textContent   = money(p.liquidity?.usd);
-      facts.cap.textContent   = money(p.fdv || p.marketCap);
-      facts.vol.textContent   = money(p.volume?.h24);
-      const tx24 = Number(p.txns?.h24?.buys||0)+Number(p.txns?.h24?.sells||0);
-      facts.tx.textContent    = isFinite(tx24) ? tx24.toLocaleString() : 'â€”';
-
-      // venues
-      const links = [];
-      links.push(`<a class="btn sm" target="_blank" rel="noopener" href="https://dexscreener.com/${p.chainId}/${p.pairAddress}">Dexscreener</a>`);
-      if ((p.chainId==='ethereum'||p.chainId==='base'||p.chainId==='optimism'||p.chainId==='arbitrum') && p.baseToken?.address){
-        links.push(`<a class="btn sm" target="_blank" rel="noopener" href="https://app.uniswap.org/explore/tokens/${p.chainId}/${p.baseToken.address}">Uniswap</a>`);
-      }
-      if (p.chainId==='arbitrum' && p.baseToken?.address){
-        links.push(`<a class="btn sm" target="_blank" rel="noopener" href="https://www.sushi.com/swap?chainId=42161&tokenIn=${p.quoteToken?.address||''}&tokenOut=${p.baseToken.address}">Sushi</a>`);
-      }
-      if (p.chainId==='bsc' && p.baseToken?.address){
-        links.push(`<a class="btn sm" target="_blank" rel="noopener" href="https://pancakeswap.finance/swap?outputCurrency=${p.baseToken.address}">Pancake</a>`);
-      }
-      if (p.chainId==='polygon' && p.baseToken?.address){
-        links.push(`<a class="btn sm" target="_blank" rel="noopener" href="https://quickswap.exchange/#/swap?currency0=${p.baseToken.address}">QuickSwap</a>`);
-      }
-      if (p.chainId==='solana'){
-        const t = p.baseToken?.address || p.baseToken?.symbol || '';
-        links.push(`<a class="btn sm" target="_blank" rel="noopener" href="https://jup.ag/swap/${encodeURIComponent(t)}">Jupiter</a>`);
-      }
-      venueLinks.innerHTML = links.join('');
-      S.selected = p;
-    }
-
-    moversGrid.addEventListener('click', e=>{
-      const tile = e.target.closest('.tile'); if (!tile) return;
-      const chain = tile.dataset.chain;
-      const pair  = tile.dataset.pair;
-      const p = (S.movers||[]).find(x=>x.chainId===chain && x.pairAddress===pair);
-      if (p) embedPair(p);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    // --- Run
-    async function runFilters(q){
-      try{
-        let list;
-        if (q) {
-          list = await dexscreenerSearch(q);
-        } else if (!S._seed) {
-          S._seed = await seedPairs();
-          list = S._seed.slice();
-        } else {
-          list = S._seed.slice();
-        }
-
-        // filter pipeline
-        list = list
-          .filter(passChain)
-          .filter(passMode)
-          .filter(passDexId)
-          .filter(passThresholds)
-          .sort(sorter);
-
-        S.movers = list;
-        renderMovers(list);
-
-        // If nothing selected yet, embed top hit
-        if (!S.selected && list[0]) embedPair(list[0]);
-      }catch(e){
-        console.warn(e);
-        moversGrid.innerHTML = `<div class="placeholder">Unable to load list. Try again.</div>`;
-      }
-    }
-
-    // initial
-    runFilters();
-  })();
-  </script>
+  });
+})();
+</script>
 </body>
 </html>
+
 
 
 

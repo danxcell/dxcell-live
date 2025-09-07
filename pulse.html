@@ -253,210 +253,96 @@
 
 <!-- Routes -->
 <script>
-(() => {
+(function () {
   const routes = {
-    home:'index.html', pulse:'pulse.html', dex:'dex.html', wealth:'wealth.html', defi:'defi.html', 
-    bots:'bots.html', market:'market.html', learn:'learn.html',
-    settings:'settings.html', login:'login.html', mt:'mt.html'
+    home:    "index.html",
+    pulse:   "pulse.html",
+    dex:     "dex.html",
+    wealth:  "wealth.html",
+    defi:    "defi.html",
+    bots:    "bots.html",
+    market:  "market.html",
+    learn:   "learn.html",
+    settings:"settings.html",
+    login:   "login.html",
+    mt:      "mt.html"
   };
-  document.querySelectorAll('.nav-btn[data-route]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const r = btn.getAttribute('data-route');
-      if (routes[r]) window.location.href = routes[r];
+
+  const here = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  document.querySelectorAll(".nav-btn[data-route]").forEach(btn => {
+    const key = btn.dataset.route;
+    btn.addEventListener("click", () => {
+      if (routes[key]) window.location.href = routes[key];
     });
+    if (routes[key] && routes[key].toLowerCase() === here) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
   });
 })();
 </script>
 
 <!-- Search: suggestions + resolve + broadcast -->
 <script>
-(() => {
-  const input = document.getElementById('pulseSearch');
-  const list  = document.getElementById('suggestList');
-  const setBtn= document.getElementById('pulseSet');
-  const chip  = document.getElementById('pulseSymbol');
+(function () {
+  const routes = {
+    home:    "index.html",
+    pulse:   "pulse.html",
+    dex:     "dex.html",
+    wealth:  "wealth.html",
+    defi:    "defi.html",
+    bots:    "bots.html",
+    market:  "market.html",
+    learn:   "learn.html",
+    settings:"settings.html",
+    login:   "login.html",
+    mt:      "mt.html"
+  };
 
-  let t=null; const debounce=(fn,ms=150)=>{clearTimeout(t);t=setTimeout(fn,ms);};
-
-  async function loadSuggestions(q){
-    if (!list) return;
-    try{
-      const r = await fetch(`/api/symbols?q=${encodeURIComponent(q||'')}`, { cache:'no-store' });
-      const j = await r.json();
-      list.innerHTML='';
-      (j.items||[]).forEach(it=>{
-        const opt=document.createElement('option');
-        opt.value = it.symbol;
-        opt.label = `${it.base}/${it.quote} â€” ${(it.venues||[]).join('/')}`;
-        opt.textContent = opt.label;
-        list.appendChild(opt);
-      });
-    }catch(_){}
-  }
-  if (input){
-    input.addEventListener('input', ()=>debounce(()=>loadSuggestions(input.value),120));
-    input.addEventListener('focus', ()=>{ if(!list.options.length) loadSuggestions(''); });
-  }
-
-  async function setSymbol(q){
-    if (!q) return;
-    try{
-      const r = await fetch(`/api/resolve?q=${encodeURIComponent(q)}&cb=${Date.now()}`, { cache:'no-store' });
-      const j = await r.json();
-      const sym = (j.symbol || q).toUpperCase();
-      chip.textContent = sym;
-      window.CURRENT = Object.assign({}, window.CURRENT, { symbol: sym });
-      window.dispatchEvent(new CustomEvent('dxlt:set-symbol', { detail: { symbol: sym }}));
-    }catch(_){
-      const sym = q.toUpperCase();
-      chip.textContent = sym;
-      window.CURRENT = Object.assign({}, window.CURRENT, { symbol: sym });
-      window.dispatchEvent(new CustomEvent('dxlt:set-symbol', { detail: { symbol: sym }}));
+  const here = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  document.querySelectorAll(".nav-btn[data-route]").forEach(btn => {
+    const key = btn.dataset.route;
+    btn.addEventListener("click", () => {
+      if (routes[key]) window.location.href = routes[key];
+    });
+    if (routes[key] && routes[key].toLowerCase() === here) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
     }
-  }
-  setBtn?.addEventListener('click', ()=> setSymbol(input.value.trim()));
-  input?.addEventListener('keydown',(e)=>{ if(e.key==='Enter') setSymbol(input.value.trim()); });
+  });
 })();
 </script>
 
 <!-- PULSE LIVE (ECG + sparks) -->
 <script>
-(() => {
-  const $ = (s) => document.querySelector(s);
-
-  const chipSym   = $('#pulseSymbol');
-  const chipBpm   = $('#pulseBpm');
-  const chipState = $('#pulseState');
-  const priceEl   = $('#pdPrice');
-  const titleSym  = $('#pdSymbol');
-  const subEl     = $('#pdSubtitle');
-  const trendEl   = $('#pdTrend');
-  const regimeEl  = $('#pdRegime');
-  const riskEl    = $('#pdRisk');
-
-  const cECG = $('#pulseCanvas');
-  const cSP  = $('#sparkPrice');
-  const cSV  = $('#sparkVol');
-  const cST  = $('#sparkTrend');
-
-  const S = { symbol:'BTCUSDT', priceSpark:[], volSpark:[], trendSpark:[], maxSpark:80, bpm:80, state:'steady' };
-
-  const getSymbol = () => {
-    const chip = chipSym?.textContent.trim();
-    if (chip && chip !== 'â€”') return chip.toUpperCase();
-    if (window.CURRENT?.symbol) return String(window.CURRENT.symbol).toUpperCase();
-    return S.symbol;
-  };
-  const baseFromPair = (sym) => {
-    const m = String(sym).toUpperCase().match(/^([A-Z0-9]+?)(USDT|USD|EUR|GBP|BTC|ETH)$/);
-    return (m ? m[1] : sym).toLowerCase();
+(function () {
+  const routes = {
+    home:    "index.html",
+    pulse:   "pulse.html",
+    dex:     "dex.html",
+    wealth:  "wealth.html",
+    defi:    "defi.html",
+    bots:    "bots.html",
+    market:  "market.html",
+    learn:   "learn.html",
+    settings:"settings.html",
+    login:   "login.html",
+    mt:      "mt.html"
   };
 
-  async function fetchTop(){
-    const r = await fetch('/api/cg/top?limit=250', { cache:'no-store' });
-    if(!r.ok) throw new Error('cg/top '+r.status);
-    return r.json();
-  }
-  const pickCoin = (list, baseLower) =>
-    list.find(c => (c.symbol||'').toLowerCase()===baseLower) ||
-    list.find(c => (c.name||'').toLowerCase().startsWith(baseLower)) || null;
-
-  const fmt = (n,dp=2)=> (n==null||!isFinite(n)) ? 'â€”' : Number(n).toLocaleString(
-    undefined,{minimumFractionDigits:dp,maximumFractionDigits:dp});
-  const badgeTrend=(p1h,p24h)=> p1h>0.8&&p24h>1?'UP':(p1h<-0.8&&p24h<-1?'DOWN':'SIDE');
-  const badgeRegime=(v)=> v>4?'HIGH VOL':v>2?'MED VOL':'LOW VOL';
-  const badgeRisk=(p24,vol)=> (Math.abs(p24)*.6+vol*.4)>=8?'ELEVATED':(Math.abs(p24)*.6+vol*.4)>=4?'MODERATE':'CALM';
-
-  function setBadges(coin){
-    const p1h  = coin.price_change_percentage_1h_in_currency ?? 0;
-    the24h:
-    const p24h = coin.price_change_percentage_24h_in_currency ?? 0;
-    const vol  = Math.abs(p1h)*1.2 + Math.abs(p24h)*0.5;
-
-    trendEl && (trendEl.textContent = `Trend: ${badgeTrend(p1h,p24h)}`);
-    regimeEl && (regimeEl.textContent = `Regime: ${badgeRegime(vol)}`);
-    riskEl   && (riskEl.textContent   = `Risk: ${badgeRisk(p24h,vol)}`);
-
-    const bpm = Math.max(55, Math.min(170, 70 + p24h*2 + vol*2));
-    S.bpm = bpm;
-    S.state = (p24h>1.5?'surge':(p24h<-1.5?'stress':'steady'));
-    chipBpm   && (chipBpm.textContent   = Math.round(bpm));
-    chipState && (chipState.textContent = S.state.toUpperCase());
-  }
-
-  function updateInfo(coin, sym){
-    titleSym && (titleSym.textContent = sym);
-    subEl    && (subEl.textContent    = coin.name ? `${coin.name} â€” rank #${coin.market_cap_rank}` : 'â€”');
-    priceEl  && (priceEl.textContent  = coin.current_price!=null ? `$${fmt(coin.current_price,2)}` : 'â€”');
-  }
-
-  function sizeCanvas(cv,w,h){
-    const dpr=window.devicePixelRatio||1;
-    cv.width=Math.floor(w*dpr); cv.height=Math.floor(h*dpr);
-    cv.style.width=w+'px'; cv.style.height=h+'px';
-    const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); return ctx;
-  }
-  function drawSpark(cv, vals, color='#22d3ee'){
-    if(!cv||vals.length<2) return;
-    const W=Math.max(cv.clientWidth||180,160), H=Math.max(cv.clientHeight||60,48), ctx=sizeCanvas(cv,W,H);
-    ctx.clearRect(0,0,W,H);
-    const min=Math.min(...vals), max=Math.max(...vals), pad=6, span=(max-min)||1;
-    ctx.strokeStyle='rgba(148,163,184,.12)'; ctx.beginPath(); ctx.moveTo(pad,H-1.5); ctx.lineTo(W-pad,H-1.5); ctx.stroke();
-    ctx.lineWidth=2; ctx.strokeStyle=color; ctx.beginPath();
-    vals.forEach((v,i)=>{const x=pad+(W-2*pad)*(i/(vals.length-1)); const y=H-pad-(H-2*pad)*((v-min)/span); i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
-    ctx.stroke();
-  }
-
-  const ECG=(()=>{let t0=0,raf=0;
-    function draw(cv,bpm,mode='steady'){
-      const W=cv.clientWidth||880,H=Math.max(cv.clientHeight||220,160),ctx=sizeCanvas(cv,W,H);
-      ctx.clearRect(0,0,W,H);
-      const mid=H*.6,msPer=60000/Math.max(40,Math.min(200,bpm)),now=performance.now(); if(!t0)t0=now;
-      const phase=((now-t0)%msPer)/msPer;
-      ctx.strokeStyle='rgba(34,211,238,.15)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,mid);ctx.lineTo(W,mid);ctx.stroke();
-      ctx.strokeStyle='#22d3ee';ctx.lineWidth=2;ctx.beginPath();
-      const spikes=mode==='surge'?2:mode==='stress'?0.5:1;
-      for(let x=0;x<=W;x++){const p=(phase+x/W)%1;const beat= p<.08?0 : p<.12?(p-.1)*-900 : p<.16?(p-.14)*900 : Math.sin((p-.16)*Math.PI*2*spikes)*.2;
-        const amp=mode==='stress'?26:mode==='surge'?34:30; const y=mid-beat*amp; x?ctx.lineTo(x,y):ctx.moveTo(x,y);}
-      ctx.stroke();
+  const here = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  document.querySelectorAll(".nav-btn[data-route]").forEach(btn => {
+    const key = btn.dataset.route;
+    btn.addEventListener("click", () => {
+      if (routes[key]) window.location.href = routes[key];
+    });
+    if (routes[key] && routes[key].toLowerCase() === here) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
     }
-    function loop(cv,bpmFn,modeFn){
-      cancelAnimationFrame(raf);
-      const tick=()=>{draw(cv,bpmFn(),modeFn());raf=requestAnimationFrame(tick)};
-      raf=requestAnimationFrame(tick);
-    }
-    return{loop};
-  })();
-
-  async function tick(){
-    const sym = getSymbol(), base = baseFromPair(sym);
-    try{
-      const top = await fetchTop();
-      const coin = pickCoin(top, base);
-      if(!coin) throw new Error('coin not found for '+sym);
-
-      const price = Number(coin.current_price)||0;
-      const vol   = Math.abs(Number(coin.price_change_percentage_24h_in_currency)||0);
-      const trend = Number(coin.price_change_percentage_1h_in_currency)||0;
-
-      S.priceSpark.push(price); S.volSpark.push(vol); S.trendSpark.push(trend);
-      if(S.priceSpark.length>S.maxSpark) S.priceSpark.shift();
-      if(S.volSpark.length  >S.maxSpark) S.volSpark.shift();
-      if(S.trendSpark.length>S.maxSpark) S.trendSpark.shift();
-
-      updateInfo(coin, sym); setBadges(coin);
-      drawSpark(cSP,S.priceSpark,'#22d3ee'); drawSpark(cSV,S.volSpark,'#a78bfa'); drawSpark(cST,S.trendSpark,'#34d399');
-
-      if (chipSym && chipSym.textContent.trim()==='â€”') chipSym.textContent=sym;
-    }catch(e){ console.warn('pulse-live tick error', e); }
-  }
-
-  window.addEventListener('dxlt:set-symbol', tick);
-  cECG && ECG.loop(cECG, ()=>S.bpm, ()=>S.state);
-
-  document.addEventListener('DOMContentLoaded', ()=>{
-    if (chipSym && chipSym.textContent.trim()!=='â€”') S.symbol = chipSym.textContent.trim().toUpperCase();
-    tick(); setInterval(tick,15000);
   });
 })();
 </script>
@@ -867,6 +753,7 @@
 <script src="./pulse.js"></script>
 </body>
 </html>
+
 
 
 

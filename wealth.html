@@ -147,63 +147,38 @@
 <footer>DXLT Neon v1.0</footer>
 
 <script>
-/* sidebar routing */
-(() => {
+(function () {
   const routes = {
-    home:'index.html', pulse:'pulse.html', dex:'dex.html', wealth:'wealth.html', defi:'defi.html', 
-    bots:'bots.html', market:'market.html', learn:'learn.html',
-    settings:'settings.html', login:'login.html', mt:'mt.html'
+    home:    "index.html",
+    pulse:   "pulse.html",
+    dex:     "dex.html",
+    wealth:  "wealth.html",
+    defi:    "defi.html",
+    bots:    "bots.html",
+    market:  "market.html",
+    learn:   "learn.html",
+    settings:"settings.html",
+    login:   "login.html",
+    mt:      "mt.html"
   };
-  document.querySelectorAll('.nav-btn[data-route]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const r = btn.getAttribute('data-route');
-      if (routes[r]) window.location.href = routes[r];
+
+  const here = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  document.querySelectorAll(".nav-btn[data-route]").forEach(btn => {
+    const key = btn.dataset.route;
+    btn.addEventListener("click", () => {
+      if (routes[key]) window.location.href = routes[key];
     });
-  });
-})();
-
-/* Wealth demo wiring (items 3â€“5) */
-(() => {
-  // 3) Live trade log demo
-  const trades = [
-    { t:'10:45:08', a:'Buy',  s:'ETH/USDT' },
-    { t:'10:17:42', a:'Sell', s:'AAPL' },
-    { t:'09:30:10', a:'Buy',  s:'BTC/USDT' },
-  ];
-  const body = document.getElementById('wl-trades');
-  body.innerHTML = trades.map(r =>
-    `<div class="tr">
-       <div>${r.t}</div>
-       <div class="${r.a==='Buy' ? 'up' : 'down'}">${r.a}</div>
-       <div>${r.s}</div>
-     </div>`
-  ).join('');
-
-  // 4) % Builder progress demo
-  let pct = 0;
-  const bar = document.getElementById('wl-progress');
-  const cur = document.getElementById('wl-current');
-  document.getElementById('wl-log').addEventListener('click', () => {
-    pct = Math.min(100, pct + 0.5);
-    bar.style.width = pct + '%';
-    cur.textContent = `+${pct.toFixed(1)}%`;
-  });
-  document.getElementById('wl-reset').addEventListener('click', () => {
-    pct = 0;
-    bar.style.width = '0%';
-    cur.textContent = '+0.0%';
-  });
-
-  // 5) Segmented tabs visual toggle
-  const tabs = document.getElementById('wl-tabs');
-  tabs.addEventListener('click', (e) => {
-    const b = e.target.closest('button.seg'); if (!b) return;
-    tabs.querySelectorAll('.seg').forEach(x => x.classList.toggle('on', x === b));
+    if (routes[key] && routes[key].toLowerCase() === here) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
   });
 })();
 </script>
 </body>
 </html>
+
 
 
 
