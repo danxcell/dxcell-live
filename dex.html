@@ -1,453 +1,400 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>DXLT · Dex</title>
 
-  <!-- keep your global app styles (unchanged) -->
-  <link href="./app.css" rel="stylesheet"/>
-
-  <!-- NEW: page-scoped styles for Dex only -->
-  <link href="./dex.css" rel="stylesheet"/>
+  <!-- Keep your old app.css in place (if you have it).
+       This new file is fully scoped and safe. -->
+  <link href="./dex.css" rel="stylesheet" />
 </head>
-<body>
-<header class="dxtl-header">
-  <img class="logo" src="logo.svg" alt="DXLT"/>
-  <div class="status"><span class="pulse-dot"></span>Live Mode</div>
-</header>
-
-<div class="app">
-  <!-- Rail -->
-  <aside class="nav-rail">
-    <div class="brand">
-      <svg aria-hidden="true" class="brand-icon" viewBox="0 0 48 48">
-        <defs>
-          <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0" stop-color="#60A5FA" />
-            <stop offset="1" stop-color="#22D3EE" />
-          </linearGradient>
-        </defs>
-        <circle cx="24" cy="24" r="20" fill="url(#g)" opacity=".25"></circle>
-        <circle cx="24" cy="24" r="19" fill="none" stroke="url(#g)" stroke-width="2" opacity=".6"></circle>
-        <polygon points="21,17 33,24 21,31" fill="url(#g)"></polygon>
-      </svg>
-      <span class="brand-text">XLT</span>
+<body class="dex-page">
+  <!-- Topbar kept super light / scoped -->
+  <header class="dex-topbar">
+    <div class="left">
+      <span class="badge">Live Mode</span>
+      <h1>Dex</h1>
     </div>
+    <div class="wallet" id="wallet-open">
+      <span>👛</span><strong id="wallet-status">Disconnected</strong>
+    </div>
+  </header>
 
-    <nav class="nav-group">
-      <button class="nav-btn" data-route="home"><span class="i">🏠</span><span class="t">Home</span></button>
-      <button class="nav-btn active" data-route="dex"><span class="i">🔄</span><span class="t">Dex</span></button>
-      <button class="nav-btn" data-route="pulse"><span class="i">📈</span><span class="t">Pulse</span></button>
-      <button class="nav-btn" data-route="wealth"><span class="i">💼</span><span class="t">Wealth</span></button>
-      <button class="nav-btn" data-route="bots"><span class="i">🤖</span><span class="t">Bot Army</span></button>
-      <button class="nav-btn" data-route="market"><span class="i">🛒</span><span class="t">Market Place</span></button>
-      <button class="nav-btn" data-route="learn"><span class="i">🎓</span><span class="t">Learn Zone</span></button>
-    </nav>
-
-    <div class="nav-spacer"></div>
-    <nav class="nav-group">
-      <button class="nav-btn" data-route="settings"><span class="i">⚙️</span><span class="t">Settings</span></button>
-      <button class="nav-btn" data-route="login"><span class="i">🔒</span><span class="t">User Login</span></button>
-      <button class="nav-btn" data-route="mt"><span class="i">📊</span><span class="t">MT4/MT5 Account</span></button>
-    </nav>
-  </aside>
-
-  <main class="main">
-    <!-- Topbar -->
-    <div class="topbar">
-      <span class="badge left">Live Mode</span>
-      <div class="topbar-title">Dex</div>
-      <div class="spacer"></div>
-      <div class="wallet" id="wallet-open">
-        <span>👛</span><strong id="wallet-status">Disconnected</strong>
+  <main class="dex-main">
+    <!-- SCOUT / FILTERS -->
+    <section class="card scout">
+      <div class="chip-row chains" id="chains">
+        <button class="chip on" data-chain="all">All</button>
+        <button class="chip" data-chain="solana">Solana</button>
+        <button class="chip" data-chain="ethereum">Ethereum</button>
+        <button class="chip" data-chain="bsc">BSC</button>
+        <button class="chip" data-chain="base">Base</button>
+        <button class="chip" data-chain="arbitrum">Arbitrum</button>
+        <button class="chip" data-chain="optimism">Optimism</button>
+        <button class="chip" data-chain="polygon">Polygon</button>
       </div>
-    </div>
 
-    <!-- CONTENT -->
-    <div class="content dex-wrap">
-      <!-- Controls -->
-      <section class="card dex-controls">
-        <div class="segrow" id="dexChains" aria-label="Chains">
-          <button class="seg on" data-chain="all">All</button>
-          <button class="seg" data-chain="solana">Solana</button>
-          <button class="seg" data-chain="ethereum">Ethereum</button>
-          <button class="seg" data-chain="bsc">BSC</button>
-          <button class="seg" data-chain="base">Base</button>
-          <button class="seg" data-chain="arbitrum">Arbitrum</button>
-          <button class="seg" data-chain="optimism">Optimism</button>
-          <button class="seg" data-chain="polygon">Polygon</button>
+      <div class="chip-row sentiment" id="sentiment">
+        <button class="chip on" data-mode="gainers">Gainers</button>
+        <button class="chip" data-mode="losers">Losers</button>
+        <button class="chip" data-mode="new">New &lt; 24h</button>
+        <button class="chip" data-mode="hot">Hot TXNs</button>
+      </div>
+
+      <div class="filters">
+        <label class="pill">
+          <span>Vol (24h) ≥</span>
+          <select id="fVol">
+            <option value="0">$0</option>
+            <option value="50000">$50k</option>
+            <option value="100000" selected>$100k</option>
+            <option value="250000">$250k</option>
+            <option value="1000000">$1m</option>
+          </select>
+        </label>
+
+        <label class="pill">
+          <span>Liquidity ≥</span>
+          <select id="fLiq">
+            <option value="0">$0</option>
+            <option value="50000">$50k</option>
+            <option value="100000" selected>$100k</option>
+            <option value="250000">$250k</option>
+            <option value="1000000">$1m</option>
+          </select>
+        </label>
+
+        <label class="pill">
+          <span>Market Cap ≥</span>
+          <select id="fCap">
+            <option value="0">$0</option>
+            <option value="250000">$250k</option>
+            <option value="500000" selected>$500k</option>
+            <option value="1000000">$1m</option>
+            <option value="5000000">$5m</option>
+          </select>
+        </label>
+
+        <label class="pill">
+          <span>Sort by</span>
+          <select id="fSort">
+            <option value="volume">Vol 24h</option>
+            <option value="liquidity">Liquidity</option>
+            <option value="mcap">Mkt Cap</option>
+            <option value="change">Change 24h</option>
+            <option value="txns">TXNs 24h</option>
+          </select>
+        </label>
+
+        <!-- EXCHANGE FILTERS -->
+        <div class="dex-pills" id="dexPills" title="Filter by exchange (dexId)">
+          <button class="chip small on" data-dexid="any">Any DEX</button>
+          <button class="chip small" data-dexid="uniswap">Uniswap</button>
+          <button class="chip small" data-dexid="sushiswap">Sushi</button>
+          <button class="chip small" data-dexid="pancakeswap">Pancake</button>
+          <button class="chip small" data-dexid="quickswap">QuickSwap</button>
+          <button class="chip small" data-dexid="jupiter">Jupiter (SOL)</button>
         </div>
 
-        <div class="segrow" id="dexCrowd" aria-label="Crowd">
-          <button class="seg on" data-crowd="gainers">Gainers</button>
-          <button class="seg" data-crowd="losers">Losers</button>
-          <button class="seg" data-crowd="new">New &lt; 24h</button>
-          <button class="seg" data-crowd="hot">Hot TXNs</button>
+        <!-- SEARCH + GO (your red box) -->
+        <div class="search">
+          <input id="q" type="text" placeholder="Paste token address, pair URL, or type symbol…" />
+          <button id="btnGo" class="btn">Go</button>
         </div>
+      </div>
 
-        <div class="thresholds">
-          <label class="chip">Vol (24h) ≥
-            <select data-filter="vol">
-              <option value="100000">$100k</option>
-              <option value="250000">$250k</option>
-              <option value="500000">$500k</option>
-              <option value="1000000">$1m</option>
-            </select>
-          </label>
-          <label class="chip">Liquidity ≥
-            <select data-filter="liq">
-              <option value="100000">$100k</option>
-              <option value="250000" selected>$250k</option>
-              <option value="500000">$500k</option>
-              <option value="1000000">$1m</option>
-            </select>
-          </label>
-          <label class="chip">Market Cap ≥
-            <select data-filter="cap">
-              <option value="1000000" selected>$1m</option>
-              <option value="5000000">$5m</option>
-              <option value="10000000">$10m</option>
-              <option value="25000000">$25m</option>
-            </select>
-          </label>
-          <label class="chip">Sort by
-            <select data-sort="by">
-              <option value="vol24h" selected>Vol 24h</option>
-              <option value="liq">Liquidity</option>
-              <option value="chg24">% Change 24h</option>
-              <option value="mcap">Market Cap</option>
-            </select>
-          </label>
-        </div>
+      <div class="hint muted">Multi-chain filters powered by Dexscreener. Click a tile to load the chart. “Go” will run the filters and update the list below.</div>
+    </section>
 
-        <div class="search-wrap">
-          <span class="search-ico" title="Search token/pair">
-            <svg viewBox="0 0 24 24" width="18" height="18">
-              <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
-              <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </span>
-          <input id="dexSearch" type="text" placeholder="Paste token address, pair URL, or type symbol…"/>
-          <button class="btn" id="dexGo">Go</button>
+    <!-- CHART + FACTS -->
+    <section class="grid">
+      <div class="card chart">
+        <div class="chart-head">
+          <div class="title" id="pairTitle">Select a pair</div>
+          <div class="venues" id="venueLinks"></div>
         </div>
-      </section>
+        <iframe id="chart" title="Dexscreener Chart" loading="lazy" src="about:blank" allow="clipboard-write *"></iframe>
+      </div>
 
-      <!-- Chart + Pair summary -->
-      <section class="dex-grid">
-        <div class="card dex-chart-card">
-          <div class="dex-chart-head">
-            <div class="title" id="dexPairTitle">Select a pair</div>
-            <div class="venue-links" id="venueLinks"></div>
-          </div>
-          <iframe id="dexChart" title="Dexscreener Chart" loading="lazy" src="about:blank" allow="clipboard-write *"></iframe>
+      <div class="card facts">
+        <div class="facts-head">
+          <div>Pair Facts</div>
+          <div class="sub" id="pairSub">—</div>
         </div>
+        <div class="facts-grid">
+          <div><span>Price</span><strong id="fPrice">—</strong></div>
+          <div><span>24h Change</span><strong id="fChg">—</strong></div>
+          <div><span>Liquidity</span><strong id="fLiqV">—</strong></div>
+          <div><span>Mkt Cap</span><strong id="fCapV">—</strong></div>
+          <div><span>Vol 24h</span><strong id="fVolV">—</strong></div>
+          <div><span>TXNs (24h)</span><strong id="fTxV">—</strong></div>
+        </div>
+      </div>
+    </section>
 
-        <div class="card">
-          <header class="card-head">
-            <div class="title">Pair Facts</div>
-            <div class="muted" id="dexPairSub">—</div>
-          </header>
-          <div class="facts">
-            <div class="fact"><div class="k">Price</div><div class="v" id="fPrice">—</div></div>
-            <div class="fact"><div class="k">24h Change</div><div class="v" id="fChg">—</div></div>
-            <div class="fact"><div class="k">Liquidity</div><div class="v" id="fLiq">—</div></div>
-            <div class="fact"><div class="k">FDV</div><div class="v" id="fFdv">—</div></div>
-            <div class="fact"><div class="k">24h Volume</div><div class="v" id="fVol">—</div></div>
-            <div class="fact"><div class="k">Txns (5m)</div><div class="v" id="fTx">—</div></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Movers / Filtered list -->
-      <section class="card movers-card">
-        <div class="top-head" style="display:flex;justify-content:space-between;align-items:center">
-          <div class="title">Top Movers — Multi-Chain (filtered)</div>
-          <div class="hint muted">Click a tile to load the chart. Filters respect the chain & thresholds above.</div>
-        </div>
-        <div class="movers-grid" id="moversGrid"></div>
-      </section>
-    </div>
+    <!-- MOVERS LIST (your green area) -->
+    <section class="card movers">
+      <div class="movers-head">
+        <div class="title">Top Movers — filtered by your selections</div>
+        <div class="muted">Click a tile to load the chart. Filters: chain + mode + (vol/liq/mcap) + exchange + sort.</div>
+      </div>
+      <div id="movers" class="movers-grid"></div>
+      <div id="moversFoot" class="foot muted"></div>
+    </section>
   </main>
-</div>
 
-<footer>DXLT Neon v1.0</footer>
+  <footer class="dex-foot">DXLT v1.0 (scoped Dex page)</footer>
 
-<script>
-/* routes */
-(() => {
-  const routes = {
-    home:'index.html', pulse:'pulse.html', dex:'dex.html', wealth:'wealth.html',
-    bots:'bots.html', market:'market.html', learn:'learn.html',
-    settings:'settings.html', login:'login.html', mt:'mt.html'
-  };
-  document.querySelectorAll('.nav-btn[data-route]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const r = btn.getAttribute('data-route');
-      if (routes[r]) window.location.href = routes[r];
-    });
-  });
-})();
+  <script>
+  (function(){
+    const $ = (s, root=document) => root.querySelector(s);
+    const $$ = (s, root=document) => Array.from(root.querySelectorAll(s));
 
-/* DEX logic — filtered list + click-to-load chart */
-(() => {
-  const $  = s => document.querySelector(s);
-  const moversGrid  = $('#moversGrid');
-  const chart       = $('#dexChart');
-  const title       = $('#dexPairTitle');
-  const sub         = $('#dexPairSub');
-  const venueLinks  = $('#venueLinks');
-  const chainsBar   = $('#dexChains');
-  const input       = $('#dexSearch');
-  const goBtn       = $('#dexGo');
+    // --- Elements
+    const chains = $('#chains');
+    const sentiment = $('#sentiment');
+    const dexPills = $('#dexPills');
+    const selectVol = $('#fVol');
+    const selectLiq = $('#fLiq');
+    const selectCap = $('#fCap');
+    const selectSort = $('#fSort');
+    const inputQ = $('#q');
+    const btnGo = $('#btnGo');
 
-  const facts = {
-    price: $('#fPrice'), chg: $('#fChg'), liq: $('#fLiq'),
-    fdv:   $('#fFdv'),   vol: $('#fVol'), tx:  $('#fTx'),
-  };
-
-  const S = {
-    chain: 'all',
-    crowd: 'gainers',
-    filters: { vol: 100000, liq: 250000, mcap: 1000000 },
-    list: [],
-    view: []
-  };
-
-  function readThresholds(){
-    const toNum = v => Number(String(v).replace(/[^0-9]/g,''))||0;
-    const volSel = document.querySelector('[data-filter="vol"]');
-    const liqSel = document.querySelector('[data-filter="liq"]');
-    const capSel = document.querySelector('[data-filter="cap"]');
-    if (volSel) S.filters.vol  = toNum(volSel.value);
-    if (liqSel) S.filters.liq  = toNum(liqSel.value);
-    if (capSel) S.filters.mcap = toNum(capSel.value);
-  }
-
-  async function dsSearch(q){
-    const url = `https://api.dexscreener.com/latest/dex/search?q=${encodeURIComponent(q)}`;
-    const r = await fetch(url, { cache: 'no-store' });
-    if (!r.ok) throw new Error(`dexsearch ${r.status}`);
-    const j = await r.json();
-    return j.pairs || [];
-  }
-
-  const SEEDS = {
-    ethereum: ['weth','usdc','uni','eth'],
-    base:     ['weth','usdc','base'],
-    arbitrum: ['weth','usdc','arb'],
-    optimism: ['weth','usdc','op'],
-    polygon:  ['usdc','weth','matic','quickswap'],
-    bsc:      ['usdt','wbnb','pancake'],
-    solana:   ['usdc','sol','ray','orca'],
-    all:      ['usdc','weth','hot','new']
-  };
-
-  async function getCandidates(){
-    const keys = SEEDS[S.chain] || SEEDS.all;
-    const buckets = await Promise.all(keys.map(k => dsSearch(k)));
-    const seen = new Set();
-    const merged = [];
-    buckets.flat().forEach(p => {
-      const id = `${p.chainId}:${p.pairAddress}`;
-      if (!seen.has(id)) { seen.add(id); merged.push(p); }
-    });
-    S.list = merged;
-  }
-
-  const money = n => (n==null || !isFinite(n)) ? 0 : Number(n);
-  const fmtMoney = n => {
-    const v = money(n);
-    if (v >= 1e9) return '$' + (v/1e9).toFixed(2) + 'b';
-    if (v >= 1e6) return '$' + (v/1e6).toFixed(2) + 'm';
-    if (v >= 1e3) return '$' + (v/1e3).toFixed(0) + 'k';
-    return '$' + v.toFixed(0);
-  };
-  const signChg = x => {
-    const v = Number(x)||0;
-    return { text:(v>0?'+':'') + v.toFixed(2) + '%', cls: v>=0? 'pos' : 'neg', val:v };
-  };
-
-  function passesThresholds(p){
-    const vol = money(p.volume?.h24);
-    const liq = money(p.liquidity?.usd);
-    const cap = money(p.fdv || p.marketCap);
-    if (vol < S.filters.vol)   return false;
-    if (liq < S.filters.liq)   return false;
-    if (cap < S.filters.mcap)  return false;
-    if (S.chain !== 'all' && String(p.chainId).toLowerCase() !== S.chain) return false;
-    return true;
-  }
-
-  function applyFilterAndSort(){
-    const list = (S.list||[]).filter(passesThresholds);
-    const ch24 = p => Number(p.priceChange?.h24 ?? 0);
-
-    let filtered = list;
-    if (S.crowd === 'gainers') filtered = list.filter(p => ch24(p) > 0);
-    if (S.crowd === 'losers')  filtered = list.filter(p => ch24(p) < 0);
-    if (S.crowd === 'new')     filtered = list.filter(p => {
-      const age = String(p.age || p.pairCreatedAt || p.info?.age || '');
-      return /h\b/i.test(age) || (Number(p.pairCreatedAt) && (Date.now()-Number(p.pairCreatedAt)) < 24*3600*1000);
-    });
-    if (S.crowd === 'hot')     filtered = list.filter(p => {
-      const tx = Number(p.txns?.h1?.buys||0) + Number(p.txns?.h1?.sells||0);
-      return tx >= 200;
-    });
-
-    const sortBy = document.querySelector('[data-sort="by"]')?.value || 'vol24h';
-    const keyFns = {
-      vol24h: p => money(p.volume?.h24),
-      liq:    p => money(p.liquidity?.usd),
-      chg24:  p => Number(p.priceChange?.h24 || 0),
-      mcap:   p => money(p.fdv || p.marketCap)
+    const moversGrid = $('#movers');
+    const moversFoot = $('#moversFoot');
+    const chart = $('#chart');
+    const title = $('#pairTitle');
+    const sub   = $('#pairSub');
+    const venueLinks = $('#venueLinks');
+    const facts = {
+      price: $('#fPrice'),
+      chg:   $('#fChg'),
+      liq:   $('#fLiqV'),
+      cap:   $('#fCapV'),
+      vol:   $('#fVolV'),
+      tx:    $('#fTxV'),
     };
-    const k = keyFns[sortBy] || keyFns.vol24h;
-    filtered.sort((a,b)=> k(b) - k(a));
 
-    S.view = filtered.slice(0, 50);
-  }
+    // --- State
+    const S = {
+      chain: 'all',
+      mode: 'gainers',
+      dexid: 'any',
+      vol: 100000,
+      liq: 100000,
+      cap: 500000,
+      sort: 'volume',
+      movers: [],
+      selected: null,
+    };
 
-  function renderGrid(){
-    const list = S.view.slice(0, 24);
-    if (!list.length){
-      moversGrid.innerHTML = `<div class="placeholder">No results for this filter. Try lowering thresholds.</div>`;
-      return;
+    // --- Helpers
+    const money = n => {
+      const v = Number(n||0);
+      if (!isFinite(v) || v<=0) return '$0';
+      if (v >= 1e9) return '$' + (v/1e9).toFixed(2) + 'b';
+      if (v >= 1e6) return '$' + (v/1e6).toFixed(2) + 'm';
+      if (v >= 1e3) return '$' + (v/1e3).toFixed(1) + 'k';
+      return '$' + v.toLocaleString();
+    };
+    const pct = x => ((Number(x)||0) > 0 ? '+' : '') + (Number(x)||0).toFixed(2) + '%';
+
+    function chipBar(el, key){
+      el.addEventListener('click', e=>{
+        const b = e.target.closest('.chip'); if(!b) return;
+        $$('.chip', el).forEach(x=>x.classList.toggle('on', x===b));
+        S[key] = b.dataset.chain || b.dataset.mode || b.dataset.dexid || S[key];
+        runFilters();
+      });
     }
-    moversGrid.innerHTML = list.map(p=>{
-      const ch  = signChg(p.priceChange?.h24);
-      const img = p.info?.imageUrl || p.baseToken?.logoURI || 'https://assets.dexscreener.com/favicon.png';
-      const pair= `${p.baseToken?.symbol||'—'}/${p.quoteToken?.symbol||'—'}`;
-      return `
-      <div class="mover" data-chain="${p.chainId}" data-pair="${p.pairAddress}">
-        <img class="m-logo" src="${img}" alt="">
-        <div class="m-meta">
-          <div class="m-name">${pair}</div>
-          <div class="m-sub">${p.chainId}</div>
-        </div>
-        <div class="m-right">
-          <div class="m-chg ${ch.cls}">${ch.text}</div>
-          <div class="m-liq">${fmtMoney(p.liquidity?.usd)} liq</div>
-        </div>
-        <div class="m-badge">${p.dexId || ''}</div>
-      </div>`;
-    }).join('');
-  }
+    chipBar(chains,'chain');
+    chipBar(sentiment,'mode');
+    chipBar(dexPills,'dexid');
 
-  function embedPair(p){
-    const src = `https://dexscreener.com/${p.chainId}/${p.pairAddress}?embed=1&theme=dark&trades=0`;
-    chart.src = src;
-    title.textContent = `${p.baseToken?.symbol||'—'}/${p.quoteToken?.symbol||'—'} • ${p.chainId}`;
-    sub.textContent   = p.pairAddress;
-
-    facts.price.textContent = p.priceUsd ? ('$' + Number(p.priceUsd).toFixed(6)) : '—';
-    const ch = signChg(p.priceChange?.h24);
-    facts.chg.textContent = ch.text; facts.chg.className = 'v ' + ch.cls;
-    facts.liq.textContent = fmtMoney(p.liquidity?.usd);
-    facts.fdv.textContent = fmtMoney(p.fdv);
-    facts.vol.textContent = fmtMoney(p.volume?.h24);
-    const txns = Number(p.txns?.m5?.buys||0)+Number(p.txns?.m5?.sells||0);
-    facts.tx.textContent  = (isFinite(txns)? txns.toLocaleString() : '—');
-
-    renderVenues(p);
-  }
-
-  function renderVenues(p){
-    const chain = p.chainId;
-    const baseAddr  = p.baseToken?.address;
-    const quoteAddr = p.quoteToken?.address;
-    const links = [];
-
-    const map = {
-      ethereum: [{name:'Uniswap', base:'https://app.uniswap.org/explore/tokens/ethereum/', type:'token'}],
-      base:     [{name:'Uniswap', base:'https://app.uniswap.org/explore/tokens/base/', type:'token'}],
-      arbitrum: [{name:'Uniswap', base:'https://app.uniswap.org/explore/tokens/arbitrum/', type:'token'},
-                 {name:'Sushi',   base:'https://www.sushi.com/swap?chainId=42161&tokenIn=', type:'swap'}],
-      optimism: [{name:'Uniswap', base:'https://app.uniswap.org/explore/tokens/optimism/', type:'token'}],
-      polygon:  [{name:'QuickSwap', base:'https://quickswap.exchange/#/swap?currency0=', type:'swap'}],
-      bsc:      [{name:'Pancake', base:'https://pancakeswap.finance/swap?outputCurrency=', type:'swap'}],
-      solana:   [{name:'Jupiter', base:'https://jup.ag/swap/', type:'sol'}],
-    };
-
-    (map[chain]||[]).forEach(v=>{
-      let href = '#';
-      if (v.type==='token' && baseAddr){
-        href = v.base + baseAddr;
-      } else if (v.type==='swap'){
-        if (chain==='polygon' && baseAddr) href = v.base + baseAddr;
-        if (chain==='bsc' && baseAddr)     href = v.base + baseAddr;
-        if (chain==='arbitrum' && baseAddr && quoteAddr)
-          href = `${v.base}${quoteAddr}&tokenOut=${baseAddr}`;
-      } else if (v.type==='sol'){
-        const t = p.baseToken?.address || p.baseToken?.symbol || '';
-        href = v.base + encodeURIComponent(t);
-      }
-      links.push(`<a class="btn" target="_blank" rel="noopener noreferrer" href="${href}">${v.name}</a>`);
+    [selectVol,selectLiq,selectCap,selectSort].forEach(sel=>{
+      sel.addEventListener('change', ()=>{
+        S.vol  = Number(selectVol.value);
+        S.liq  = Number(selectLiq.value);
+        S.cap  = Number(selectCap.value);
+        S.sort = selectSort.value;
+        runFilters();
+      });
     });
-    links.push(`<a class="btn" target="_blank" rel="noopener noreferrer" href="https://dexscreener.com/${chain}/${p.pairAddress}">Dexscreener</a>`);
-    venueLinks.innerHTML = links.join('');
-  }
 
-  moversGrid.addEventListener('click', e=>{
-    const card = e.target.closest('.mover');
-    if (!card) return;
-    const chain = card.getAttribute('data-chain');
-    const pair  = card.getAttribute('data-pair');
-    const p = (S.view||[]).find(x=>x.chainId===chain && x.pairAddress===pair)
-          || (S.list||[]).find(x=>x.chainId===chain && x.pairAddress===pair);
-    if (p) { embedPair(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-  });
+    btnGo.addEventListener('click', ()=> runFilters(inputQ.value.trim()));
+    inputQ.addEventListener('keydown', e=>{ if(e.key==='Enter') runFilters(inputQ.value.trim()); });
 
-  chainsBar.addEventListener('click', async e=>{
-    const b = e.target.closest('button.seg'); if (!b) return;
-    chainsBar.querySelectorAll('.seg').forEach(x=>x.classList.toggle('on', x===b));
-    S.chain = b.dataset.chain || 'all';
-    await refreshList();
-  });
+    // --- API
+    async function dexscreenerSearch(q='trending'){
+      const url = `https://api.dexscreener.com/latest/dex/search?q=${encodeURIComponent(q)}`;
+      const r = await fetch(url, {cache:'no-store'});
+      if (!r.ok) throw new Error('dexsearch '+r.status);
+      const j = await r.json();
+      return j.pairs || [];
+    }
 
-  document.addEventListener('click', e=>{
-    const b = e.target.closest('#dexCrowd .seg'); if (!b) return;
-    b.parentElement.querySelectorAll('.seg').forEach(x=>x.classList.toggle('on', x===b));
-    S.crowd = b.dataset.crowd;
-    applyFilterAndSort();
-    renderGrid();
-  });
+    // small helper that gets some variety when not searching specifically
+    async function seedPairs(){
+      const buckets = ['trending','hot','new','gainers','losers'];
+      const res = [];
+      for (const k of buckets){
+        try {
+          const list = await dexscreenerSearch(k);
+          res.push(...list.slice(0, 60)); // plenty to filter
+        } catch(e){}
+      }
+      return res;
+    }
 
-  document.addEventListener('change', e=>{
-    if (!e.target.matches('select,[data-filter]')) return;
-    readThresholds();
-    applyFilterAndSort();
-    renderGrid();
-  });
+    // --- Core filter pipeline
+    function passChain(p){
+      if (S.chain==='all') return true;
+      return (String(p.chainId||'').toLowerCase()===S.chain.toLowerCase());
+    }
+    function passMode(p){
+      if (S.mode==='new'){
+        // under 24h age
+        return (p.pairCreatedAt && (Date.now()-Number(p.pairCreatedAt)) < 24*3600*1000);
+      }
+      if (S.mode==='hot'){
+        const tx = Number(p.txns?.h24?.buys||0)+Number(p.txns?.h24?.sells||0);
+        return tx > 500; // arbitrary "hot"
+      }
+      if (S.mode==='gainers') return (Number(p.priceChange?.h24||0) > 0);
+      if (S.mode==='losers')  return (Number(p.priceChange?.h24||0) < 0);
+      return true;
+    }
+    function passDexId(p){
+      if (S.dexid==='any') return true;
+      return String(p.dexId||'').toLowerCase().includes(S.dexid.toLowerCase());
+    }
+    function passThresholds(p){
+      const vol = Number(p.volume?.h24||0);
+      const liq = Number(p.liquidity?.usd||0);
+      const mc  = Number(p.fdv || p.marketCap || 0);
+      return (vol>=S.vol && liq>=S.liq && mc>=S.cap);
+    }
+    function sorter(a,b){
+      const m = {
+        volume: (x)=>Number(x.volume?.h24||0),
+        liquidity: (x)=>Number(x.liquidity?.usd||0),
+        mcap: (x)=>Number(x.fdv||x.marketCap||0),
+        change: (x)=>Number(x.priceChange?.h24||0),
+        txns: (x)=>Number(x.txns?.h24?.buys||0)+Number(x.txns?.h24?.sells||0),
+      }[S.sort];
+      return (m(b)-m(a));
+    }
 
-  async function handleGo(){
-    const q = input.value.trim();
-    if (!q) return;
-    try{
-      const res = await dsSearch(q);
-      if (!res.length){ title.textContent = 'No results'; chart.src = 'about:blank'; return; }
-      const pick = res.find(passesThresholds) || res[0];
-      embedPair(pick);
-      S.list = res;
-      applyFilterAndSort();
-      renderGrid();
-    }catch(err){ console.warn(err); }
-  }
-  goBtn.addEventListener('click', handleGo);
-  input.addEventListener('keydown', e=>{ if(e.key==='Enter') handleGo(); });
+    function renderMovers(list){
+      if (!list.length){
+        moversGrid.innerHTML = `<div class="placeholder">No matches. Try lowering thresholds or switching chain/mode.</div>`;
+        moversFoot.textContent = '';
+        return;
+      }
+      moversGrid.innerHTML = list.slice(0, 48).map(p=>{
+        const ch = Number(p.priceChange?.h24||0);
+        const logo = p.info?.imageUrl || p.baseToken?.logoURI || 'https://assets.dexscreener.com/favicon.png';
+        const tx24 = Number(p.txns?.h24?.buys||0)+Number(p.txns?.h24?.sells||0);
+        return `
+          <div class="tile" data-chain="${p.chainId}" data-pair="${p.pairAddress}">
+            <img src="${logo}" class="logo" alt="">
+            <div class="meta">
+              <div class="name">${p.baseToken?.symbol||'—'} / ${p.quoteToken?.symbol||'—'}</div>
+              <div class="sub">${p.chainId} · ${p.dexId||''}</div>
+            </div>
+            <div class="right">
+              <div class="chg ${ch>=0?'pos':'neg'}">${pct(ch)}</div>
+              <div class="liqs">${money(p.liquidity?.usd)} liq · ${tx24.toLocaleString()} tx</div>
+            </div>
+          </div>`;
+      }).join('');
+      moversFoot.textContent = `${list.length.toLocaleString()} matches • Chain: ${S.chain} • Dex: ${S.dexid} • Vol≥ ${money(S.vol)} • Liq≥ ${money(S.liq)} • Cap≥ ${money(S.cap)}`;
+    }
 
-  async function refreshList(){
-    readThresholds();
-    moversGrid.innerHTML = `<div class="placeholder">Loading pairs…</div>`;
-    await getCandidates();
-    applyFilterAndSort();
-    renderGrid();
-    const pick = S.view[0] || S.list[0];
-    if (pick) embedPair(pick);
-  }
+    function embedPair(p){
+      if (!p) return;
+      const src = `https://dexscreener.com/${p.chainId}/${p.pairAddress}?embed=1&theme=dark&trades=0`;
+      chart.src = src;
+      title.textContent = `${p.baseToken?.symbol||'—'}/${p.quoteToken?.symbol||'—'} • ${p.chainId}`;
+      sub.textContent = p.pairAddress;
 
-  document.addEventListener('DOMContentLoaded', refreshList);
-})();
-</script>
+      facts.price.textContent = p.priceUsd ? ('$' + Number(p.priceUsd).toFixed(6)) : '—';
+      facts.chg.textContent   = p.priceChange?.h24!=null ? pct(p.priceChange.h24) : '—';
+      facts.liq.textContent   = money(p.liquidity?.usd);
+      facts.cap.textContent   = money(p.fdv || p.marketCap);
+      facts.vol.textContent   = money(p.volume?.h24);
+      const tx24 = Number(p.txns?.h24?.buys||0)+Number(p.txns?.h24?.sells||0);
+      facts.tx.textContent    = isFinite(tx24) ? tx24.toLocaleString() : '—';
+
+      // venues
+      const links = [];
+      links.push(`<a class="btn sm" target="_blank" rel="noopener" href="https://dexscreener.com/${p.chainId}/${p.pairAddress}">Dexscreener</a>`);
+      if ((p.chainId==='ethereum'||p.chainId==='base'||p.chainId==='optimism'||p.chainId==='arbitrum') && p.baseToken?.address){
+        links.push(`<a class="btn sm" target="_blank" rel="noopener" href="https://app.uniswap.org/explore/tokens/${p.chainId}/${p.baseToken.address}">Uniswap</a>`);
+      }
+      if (p.chainId==='arbitrum' && p.baseToken?.address){
+        links.push(`<a class="btn sm" target="_blank" rel="noopener" href="https://www.sushi.com/swap?chainId=42161&tokenIn=${p.quoteToken?.address||''}&tokenOut=${p.baseToken.address}">Sushi</a>`);
+      }
+      if (p.chainId==='bsc' && p.baseToken?.address){
+        links.push(`<a class="btn sm" target="_blank" rel="noopener" href="https://pancakeswap.finance/swap?outputCurrency=${p.baseToken.address}">Pancake</a>`);
+      }
+      if (p.chainId==='polygon' && p.baseToken?.address){
+        links.push(`<a class="btn sm" target="_blank" rel="noopener" href="https://quickswap.exchange/#/swap?currency0=${p.baseToken.address}">QuickSwap</a>`);
+      }
+      if (p.chainId==='solana'){
+        const t = p.baseToken?.address || p.baseToken?.symbol || '';
+        links.push(`<a class="btn sm" target="_blank" rel="noopener" href="https://jup.ag/swap/${encodeURIComponent(t)}">Jupiter</a>`);
+      }
+      venueLinks.innerHTML = links.join('');
+      S.selected = p;
+    }
+
+    moversGrid.addEventListener('click', e=>{
+      const tile = e.target.closest('.tile'); if (!tile) return;
+      const chain = tile.dataset.chain;
+      const pair  = tile.dataset.pair;
+      const p = (S.movers||[]).find(x=>x.chainId===chain && x.pairAddress===pair);
+      if (p) embedPair(p);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // --- Run
+    async function runFilters(q){
+      try{
+        let list;
+        if (q) {
+          list = await dexscreenerSearch(q);
+        } else if (!S._seed) {
+          S._seed = await seedPairs();
+          list = S._seed.slice();
+        } else {
+          list = S._seed.slice();
+        }
+
+        // filter pipeline
+        list = list
+          .filter(passChain)
+          .filter(passMode)
+          .filter(passDexId)
+          .filter(passThresholds)
+          .sort(sorter);
+
+        S.movers = list;
+        renderMovers(list);
+
+        // If nothing selected yet, embed top hit
+        if (!S.selected && list[0]) embedPair(list[0]);
+      }catch(e){
+        console.warn(e);
+        moversGrid.innerHTML = `<div class="placeholder">Unable to load list. Try again.</div>`;
+      }
+    }
+
+    // initial
+    runFilters();
+  })();
+  </script>
 </body>
 </html>
