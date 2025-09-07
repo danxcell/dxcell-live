@@ -1,102 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>DXCELL • Wealth</title>
-  <link href="./app.css" rel="stylesheet" />
-  <style>
-    /* --- Minimal fallbacks in case app.css misses anything --- */
-    :root{
-      --bg:#0b1118;--panel:#101922;--muted:#94a3b8;--text:#e5edf5;--teal:#22d3ee;--green:#22c55e;--red:#f87171;
-      --card:#0f172a;--border:#1e293b;--shadow:0 6px 30px rgba(0,0,0,.35)
-    }
-    html,body{height:100%;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial}
-    .dxtl-header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#0d1520,#0b1118)}
-    .dxtl-header .status{margin-left:auto;font-size:12px;color:var(--muted)}
-    .pulse-dot{display:inline-block;width:8px;height:8px;background:var(--green);border-radius:999px;box-shadow:0 0 0 0 rgba(34,197,94,.7);animation:pulse 1.6s infinite}
-    @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.7)}70%{box-shadow:0 0 0 12px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
-
-    .app{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 52px)}
-    .nav-rail{border-right:1px solid var(--border);background:#0c1620;padding:16px;display:flex;flex-direction:column}
-    .brand{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-    .brand-text{font-weight:700;letter-spacing:.12em}
-    .nav-group{display:grid;gap:6px;margin-top:8px}
-    .nav-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:transparent;border:1px solid transparent;color:#cbd5e1;cursor:pointer}
-    .nav-btn[active],.nav-btn:hover{border-color:#1f2a38;background:#0f1a25;color:#e2e8f0}
-    .nav-spacer{flex:1}
-
-    .main{display:flex;flex-direction:column;}
-    .topbar{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border)}
-    .badge{border:1px solid #1e293b;background:#0d1520;color:#7dd3fc;padding:4px 8px;border-radius:999px;font-size:12px}
-    .topbar-title{font-weight:700;letter-spacing:.06em}
-    .wallet{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);border-radius:12px;cursor:pointer}
-
-    .content{padding:18px;display:grid;grid-template-columns:1.3fr 1.4fr 1fr;gap:16px}
-    .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:16px}
-    .card h3{margin:0 0 10px 0;font-size:16px;letter-spacing:.03em}
-    .muted{color:var(--muted)}
-    .divider{height:1px;background:var(--border);margin:12px 0}
-
-    /* small utilities */
-    .row{display:flex;gap:10px}
-    .btn{background:#0f172a;border:1px solid var(--border);color:#e2e8f0;border-radius:12px;padding:10px 12px;cursor:pointer}
-    .btn.primary{background:linear-gradient(135deg,#22d3ee,#60a5fa);color:#0b1118;border:0}
-    .btn.ghost{background:transparent;border-color:var(--border)}
-    .btn.full{flex:1}
-
-    /* gauges / bars (simple visual placeholders) */
-    .gauge{height:8px;background:#0f1a25;border:1px solid var(--border);border-radius:999px;overflow:hidden}
-    .gauge>span{display:block;height:100%;background:linear-gradient(90deg,#22d3ee,#38bdf8)}
-    .pill{font-size:12px;border:1px solid var(--border);padding:4px 8px;border-radius:999px;color:#cbd5e1}
-
-    /* table */
-    table{width:100%;border-collapse:collapse;font-size:13px}
-    th,td{padding:8px;border-bottom:1px solid #142133}
-    th{color:#9fb3c8;font-weight:600;text-align:left}
-
-    /* bottom dock */
-    .dock{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:12px 16px;background:#0d1520;border:1px solid var(--border);border-radius:16px;position:sticky;bottom:16px}
-    .dock .tab{padding:8px 10px;border-radius:10px;border:1px solid transparent;color:#cbd5e1;cursor:pointer}
-    .dock .tab.active,.dock .tab:hover{border-color:#1f2a38;background:#0f1a25;color:#e2e8f0}
-    .fab{margin-left:auto;width:36px;height:36px;border-radius:12px;border:0;background:linear-gradient(135deg,#22d3ee,#60a5fa);color:#0b1118;font-weight:900;cursor:pointer}
-
-    /* modal */
-    .modal-backdrop{position:fixed;inset:0;display:none;place-items:center;background:rgba(2,6,14,.6)}
-    .modal{width:min(560px,92vw);background:var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:18px}
-    .close-x{float:right;cursor:pointer;color:#9fb3c8}
-  </style>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>DXLT · Wealth</title>
+  <link href="./app.css" rel="stylesheet"/>
 </head>
 <body>
 <header class="dxtl-header">
-  <img class="logo" src="logo.svg" alt="DXCELL" style="height:24px"/>
-  <div class="status"><span class="pulse-dot"></span> Live Terminal</div>
+  <img class="logo" src="logo.svg" alt="DXLT"/>
+  <div class="status"><span class="pulse-dot"></span>Live Mode</div>
 </header>
 
 <div class="app">
+  <!-- Sidebar -->
   <aside class="nav-rail">
     <div class="brand">
-      <svg aria-hidden="true" class="brand-icon" viewBox="0 0 48 48" width="28" height="28">
+      <svg aria-hidden="true" class="brand-icon" viewBox="0 0 48 48">
         <defs>
           <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0" stop-color="#60A5FA"/><stop offset="1" stop-color="#22D3EE"/>
+            <stop offset="0" stop-color="#60A5FA" />
+            <stop offset="1" stop-color="#22D3EE" />
           </linearGradient>
         </defs>
-        <circle cx="24" cy="24" r="20" fill="url(#g)" opacity=".25"/>
-        <circle cx="24" cy="24" r="19" fill="none" stroke="url(#g)" stroke-width="2" opacity=".6"/>
-        <polygon fill="url(#g)" points="21,17 33,24 21,31"/>
+        <circle cx="24" cy="24" r="20" fill="url(#g)" opacity=".25"></circle>
+        <circle cx="24" cy="24" r="19" fill="none" stroke="url(#g)" stroke-width="2" opacity=".6"></circle>
+        <polygon points="21,17 33,24 21,31" fill="url(#g)"></polygon>
       </svg>
       <span class="brand-text">XLT</span>
     </div>
+
     <nav class="nav-group">
       <button class="nav-btn" data-route="home"><span class="i">🏠</span><span class="t">Home</span></button>
       <button class="nav-btn" data-route="pulse"><span class="i">📈</span><span class="t">Pulse</span></button>
       <button class="nav-btn" data-route="dex"><span class="i">🔄</span><span class="t">Dex</span></button>
-      <button class="nav-btn" active data-route="wealth"><span class="i">💼</span><span class="t">Wealth</span></button>
+      <button class="nav-btn active" data-route="wealth"><span class="i">💼</span><span class="t">Wealth</span></button>
       <button class="nav-btn" data-route="bots"><span class="i">🤖</span><span class="t">Bot Army</span></button>
       <button class="nav-btn" data-route="market"><span class="i">🛒</span><span class="t">Market Place</span></button>
       <button class="nav-btn" data-route="learn"><span class="i">🎓</span><span class="t">Learn Zone</span></button>
     </nav>
+
     <div class="nav-spacer"></div>
     <nav class="nav-group">
       <button class="nav-btn" data-route="settings"><span class="i">⚙️</span><span class="t">Settings</span></button>
@@ -106,164 +49,157 @@
   </aside>
 
   <main class="main">
+    <!-- Topbar -->
     <div class="topbar">
       <span class="badge left">Live Mode</span>
       <div class="topbar-title">Wealth</div>
       <div class="spacer"></div>
-      <div class="wallet" id="wallet-open"><span>👛</span><strong id="wallet-status">Disconnected</strong></div>
+      <div class="wallet" id="wallet-open">
+        <span>👛</span><strong id="wallet-status">Disconnected</strong>
+      </div>
     </div>
 
-    <div class="content">
-      <!-- Portfolio Command Board -->
-      <section class="card" id="card-portfolio">
-        <h3>Portfolio</h3>
-        <div class="row" style="gap:16px">
-          <div style="flex:1">
-            <div class="muted" style="font-size:12px;margin-bottom:6px">Net Worth (30d)</div>
-            <div class="gauge" aria-label="Net worth">
-              <span style="width:72%"></span>
+    <!-- Content -->
+    <div class="content wealth-wrap">
+      <!-- Row 1 -->
+      <section class="grid-2">
+        <!-- Portfolio card -->
+        <div class="card">
+          <header class="card-head">
+            <div class="title">Portfolio</div>
+            <div class="muted">Net Worth (30d)</div>
+          </header>
+
+          <div class="stat-row">
+            <div class="muted">Today</div>
+            <div class="stat-positive" id="wl-today">£ 0</div>
+          </div>
+
+          <div class="kv">
+            <div class="chip">PS1</div>
+            <div class="chip">AI Risk: <strong id="wl-risk">Medium</strong></div>
+          </div>
+
+          <div class="placeholder" id="wl-equity">Connect to load portfolio…</div>
+        </div>
+
+        <!-- Live Trade Log -->
+        <div class="card">
+          <header class="card-head">
+            <div class="title">Live Trade Log</div>
+          </header>
+
+          <div class="table">
+            <div class="tr head">
+              <div>Time</div>
+              <div>Action</div>
+              <div>Trade</div>
             </div>
-            <div class="row" style="gap:8px;margin-top:10px">
-              <span class="pill">Exposure 56%</span>
-              <span class="pill">PS1</span>
-              <span class="pill">AI Risk: <b>Medium</b></span>
+            <div class="tbody" id="wl-trades"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Row 2 -->
+      <section class="grid-2">
+        <!-- % Builder -->
+        <div class="card">
+          <header class="card-head">
+            <div class="title">% Builder</div>
+            <div class="muted">Today</div>
+          </header>
+
+          <div class="progress">
+            <div class="bar"><span id="wl-progress" style="width:0%"></span></div>
+            <div class="row">
+              <div class="muted">This Week Target <strong>+8%</strong></div>
+              <div>Current <strong id="wl-current">+0.0%</strong></div>
             </div>
           </div>
-          <div style="width:180px;align-self:flex-start;text-align:right">
-            <div class="muted" style="font-size:12px">Today</div>
-            <div style="font-size:22px;color:var(--green)">+ £ 7,280</div>
+
+          <div class="row gap">
+            <button class="btn" id="wl-log">Log +0.5%</button>
+            <button class="btn" id="wl-reset">Reset</button>
+          </div>
+
+          <div class="segrow" id="wl-tabs">
+            <button class="seg on" data-tab="sandbox">Sandbox</button>
+            <button class="seg" data-tab="builder">% Builder</button>
+            <button class="seg" data-tab="pulse">Market Pulse</button>
+            <button class="seg" data-tab="ai">AI Buddy</button>
           </div>
         </div>
-      </section>
 
-      <!-- Live Trade Log -->
-      <section class="card" id="card-tradelog">
-        <h3>Live Trade Log</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Time</th><th>Action</th><th>Trade</th><th>Size</th><th>Stop</th></tr></thead>
-            <tbody id="trade-body">
-              <tr><td>10:45:08</td><td style="color:var(--green)">Buy</td><td>ETH/USDT</td><td>1.2</td><td>3,112</td></tr>
-              <tr><td>10:17:42</td><td style="color:var(--red)">Sell</td><td>AAPL</td><td>10</td><td>168.50</td></tr>
-              <tr><td>09:30:10</td><td style="color:var(--green)">Buy</td><td>BTC/USDT</td><td>0.25</td><td>59,800</td></tr>
-            </tbody>
-          </table>
+        <!-- Chart embed -->
+        <div class="card">
+          <header class="card-head">
+            <div class="title">Chart</div>
+            <div class="muted">Embed TradingView / custom chart</div>
+          </header>
+          <div class="tv-frame" id="wl-chart">Chart goes here…</div>
         </div>
       </section>
-
-      <!-- AI Buddy -->
-      <section class="card" id="card-aibuddy">
-        <h3>AI Buddy</h3>
-        <div class="muted">Today's Briefing</div>
-        <ul style="margin:8px 0 0 16px">
-          <li>Net +2.1% on the day; crypto led gains.</li>
-          <li>Elevated volatility in BTC approaching resistance.</li>
-          <li>Consider trimming risk on overextended names.</li>
-        </ul>
-        <div class="divider"></div>
-        <button class="btn primary" style="width:100%">Open Assistant</button>
-      </section>
-
-      <!-- % Builder -->
-      <section class="card" id="card-pbuilder">
-        <h3>% Builder</h3>
-        <div class="muted">Today</div>
-        <div class="gauge" style="margin:6px 0 10px 0"><span id="pb-today" style="width:42%"></span></div>
-        <div class="row" style="justify-content:space-between">
-          <span class="muted">This Week: Target <b>+8%</b></span>
-          <span>Current <b id="pb-week">+6.3%</b></span>
-        </div>
-        <div class="divider"></div>
-        <div class="row">
-          <button class="btn full" id="pb-step">Log +0.5%</button>
-          <button class="btn ghost" id="pb-reset">Reset</button>
-        </div>
-      </section>
-
-      <!-- Chart Placeholder -->
-      <section class="card" id="card-chart">
-        <h3>Chart</h3>
-        <div class="muted">Embed TradingView / custom chart here</div>
-        <div class="gauge" style="height:180px;margin-top:8px"><span style="width:68%"></span></div>
-      </section>
-
-      <!-- Open Positions -->
-      <section class="card" id="card-positions">
-        <h3>Open Positions</h3>
-        <table>
-          <thead><tr><th>Asset</th><th>Size</th><th>P/L</th><th>Stop</th><th>Risk</th></tr></thead>
-          <tbody>
-            <tr><td>BTC/USDT</td><td>0.50</td><td style="color:var(--green)">+1,300</td><td>59,120</td><td><div class="gauge" style="width:90px"><span style="width:28%"></span></div></td></tr>
-            <tr><td>EUR/USD</td><td>50,000</td><td style="color:var(--red)">-200</td><td>1.0780</td><td><div class="gauge" style="width:90px"><span style="width:44%"></span></div></td></tr>
-            <tr><td>TSLA</td><td>10</td><td style="color:var(--green)">+1,200</td><td>228.50</td><td><div class="gauge" style="width:90px"><span style="width:20%"></span></div></td></tr>
-          </tbody>
-        </table>
-      </section>
-
-      <!-- Bottom Dock -->
-      <div class="dock">
-        <button class="tab">Sandbox</button>
-        <button class="tab active">% Builder</button>
-        <button class="tab">Market Pulse</button>
-        <button class="tab">AI Buddy</button>
-        <div class="muted" id="mini-pl">+1.8%</div>
-        <button class="fab" title="Quick Add">+</button>
-      </div>
     </div>
   </main>
 </div>
 
-<!-- Wallet modal -->
-<div class="modal-backdrop" id="wallet-modal">
-  <div class="modal">
-    <span class="close-x" id="wallet-close">✕</span>
-    <h4>Connect Wallet</h4>
-    <p class="muted" style="margin:0 0 8px 0">Choose a wallet:</p>
-    <div class="row"><button class="btn full" data-wallet="MetaMask">MetaMask</button><button class="btn full" data-wallet="WalletConnect">WalletConnect</button></div>
-    <div class="row" style="margin-top:10px"><button class="btn" id="wallet-disconnect">Disconnect</button><button class="btn primary" id="wallet-close2">Close</button></div>
-  </div>
-</div>
-
-<footer style="padding:12px 18px;border-top:1px solid var(--border);color:var(--muted)">DXLT Neon v1.1 • Wealth</footer>
+<footer>DXLT Neon v1.0</footer>
 
 <script>
-  // lightweight router hookup (kept from your pattern)
-  (function(){
-    const routes={home:'index.html',pulse:'pulse.html',dex:'dex.html',wealth:'wealth.html',bots:'bots.html',market:'market.html',learn:'learn.html',settings:'settings.html',login:'login.html',mt:'mt.html'};
-    document.querySelectorAll('.nav-btn[data-route]').forEach(btn=>btn.addEventListener('click',()=>{
-      const r=btn.getAttribute('data-route'); if(routes[r]) location.href=routes[r];
-    }));
-  })();
-
-  // wallet modal
-  (function(){
-    const open=document.getElementById('wallet-open');
-    const modal=document.getElementById('wallet-modal');
-    const closeBtns=[document.getElementById('wallet-close'),document.getElementById('wallet-close2')];
-    const status=document.getElementById('wallet-status');
-    open.addEventListener('click',()=>{modal.style.display='grid'});
-    closeBtns.forEach(b=>b&&b.addEventListener('click',()=>modal.style.display='none'));
-    document.querySelectorAll('[data-wallet]').forEach(b=>b.addEventListener('click',()=>{status.textContent='Connected: '+b.dataset.wallet; modal.style.display='none'}));
-    document.getElementById('wallet-disconnect').addEventListener('click',()=>{status.textContent='Disconnected'});
-  })();
-
-  // % Builder micro-logic (demo only)
-  (function(){
-    const today=document.getElementById('pb-today');
-    const week=document.getElementById('pb-week');
-    const step=document.getElementById('pb-step');
-    const reset=document.getElementById('pb-reset');
-    let todayPct=42; // represents 42% of daily goal achieved
-    let weekPct=6.3;
-    step.addEventListener('click',()=>{
-      todayPct=Math.min(100,todayPct+10);
-      weekPct=Math.min(100,+(weekPct+0.5).toFixed(1));
-      today.style.width=todayPct+'%';
-      week.textContent='+'+weekPct+'%';
+/* sidebar routing */
+(() => {
+  const routes = {
+    home:'index.html', pulse:'pulse.html', dex:'dex.html', wealth:'wealth.html',
+    bots:'bots.html', market:'market.html', learn:'learn.html',
+    settings:'settings.html', login:'login.html', mt:'mt.html'
+  };
+  document.querySelectorAll('.nav-btn[data-route]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const r = btn.getAttribute('data-route');
+      if (routes[r]) window.location.href = routes[r];
     });
-    reset.addEventListener('click',()=>{todayPct=0; weekPct=0; today.style.width='0%'; week.textContent='+0%';});
-  })();
+  });
+})();
+
+/* Wealth demo wiring (items 3–5) */
+(() => {
+  // 3) Live trade log demo
+  const trades = [
+    { t:'10:45:08', a:'Buy',  s:'ETH/USDT' },
+    { t:'10:17:42', a:'Sell', s:'AAPL' },
+    { t:'09:30:10', a:'Buy',  s:'BTC/USDT' },
+  ];
+  const body = document.getElementById('wl-trades');
+  body.innerHTML = trades.map(r =>
+    `<div class="tr">
+       <div>${r.t}</div>
+       <div class="${r.a==='Buy' ? 'up' : 'down'}">${r.a}</div>
+       <div>${r.s}</div>
+     </div>`
+  ).join('');
+
+  // 4) % Builder progress demo
+  let pct = 0;
+  const bar = document.getElementById('wl-progress');
+  const cur = document.getElementById('wl-current');
+  document.getElementById('wl-log').addEventListener('click', () => {
+    pct = Math.min(100, pct + 0.5);
+    bar.style.width = pct + '%';
+    cur.textContent = `+${pct.toFixed(1)}%`;
+  });
+  document.getElementById('wl-reset').addEventListener('click', () => {
+    pct = 0;
+    bar.style.width = '0%';
+    cur.textContent = '+0.0%';
+  });
+
+  // 5) Segmented tabs visual toggle
+  const tabs = document.getElementById('wl-tabs');
+  tabs.addEventListener('click', (e) => {
+    const b = e.target.closest('button.seg'); if (!b) return;
+    tabs.querySelectorAll('.seg').forEach(x => x.classList.toggle('on', x === b));
+  });
+})();
 </script>
 </body>
 </html>
-html

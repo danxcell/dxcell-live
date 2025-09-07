@@ -882,3 +882,95 @@ footer { text-align:center; padding:12px; color:#6b7280; font-size:12px; border-
 .depth-card .labels{display:flex;flex-direction:column;gap:4px}
 .depth-card .labels .bid{color:#22c55e}
 .depth-card .labels .ask{color:#ef4444}
+
+/* === Wealth Page Additions (scoped; safe to append) === */
+
+/* Layout */
+.wealth-wrap { display: grid; gap: 20px; }
+
+/* Two equal columns on large screens (override global .grid-2) */
+.wealth-wrap .grid-2 {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 1100px) {
+  .wealth-wrap .grid-2 { grid-template-columns: 1fr 1fr; }
+}
+
+/* Card spacing (uses your global .card visuals) */
+.wealth-wrap .card { padding: 16px; }
+
+/* Heads/titles/muted already exist; just light spacing */
+.wealth-wrap .card-head { margin-bottom: 10px; }
+.wealth-wrap .card .title { font-weight: 600; letter-spacing: .3px; }
+
+/* Portfolio stats row */
+.wealth-wrap .stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 6px 0 10px;
+}
+.wealth-wrap .stat-positive { color: #22c55e; font-weight: 700; font-size: 1.25rem; }
+
+/* Chips row */
+.wealth-wrap .kv { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+
+/* Live Trade Log (div-based table) */
+.wealth-wrap .table { display: grid; gap: 6px; }
+.wealth-wrap .tr {
+  display: grid;
+  grid-template-columns: 120px 90px 1fr;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(15,23,42,.5);
+  border: 1px solid rgba(148,163,184,.12);
+}
+.wealth-wrap .tr.head {
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  padding: 0 2px 6px;
+  font-weight: 600;
+}
+.wealth-wrap .tr .up   { color: #22c55e; font-weight: 600; }
+.wealth-wrap .tr .down { color: #ef4444; font-weight: 600; }
+
+/* % Builder progress bar */
+.wealth-wrap .progress .bar {
+  position: relative;
+  height: 10px;
+  background: rgba(148,163,184,.18);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.wealth-wrap .progress .bar span {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 18px rgba(124,58,237,.45) inset;
+}
+
+/* Buttons + segmented controls */
+.wealth-wrap .row { display: flex; align-items: center; justify-content: space-between; }
+.wealth-wrap .row.gap { gap: 10px; }
+
+.wealth-wrap .segrow { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.wealth-wrap .seg    { border: 1px solid rgba(148,163,184,.25); background: rgba(2,6,23,.6);
+                       color: #cbd5e1; padding: 8px 10px; border-radius: 12px; cursor: pointer; }
+.wealth-wrap .seg.on { border-color: #22d3ee;
+                       box-shadow: 0 0 0 1px rgba(34,211,238,.25), 0 0 20px rgba(34,211,238,.10) inset; }
+
+/* Chart/placeholder area */
+.wealth-wrap .tv-frame,
+.wealth-wrap .placeholder {
+  min-height: 220px;
+  background: rgba(2,6,23,.55);
+  border: 1px dashed #22314a;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted);
+}
+
