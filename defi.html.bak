@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>DXLT · DeFi Hub</title>
+  <title>DXLT Â· DeFi Hub</title>
   <link href="./app.css" rel="stylesheet"/>
   <style>
     /* Page-scoped helpers only (app-wide UI stays in app.css) */
@@ -54,25 +54,21 @@
 
     <!-- TOP NAV (Market Place removed, DeFi added) -->
     <nav class="nav-group">
-  <button class="nav-btn" data-route="home"><span class="i">??</span><span class="t">Home</span></button>
-  <button class="nav-btn" data-route="pulse"><span class="i">??</span><span class="t">Pulse</span></button>
-  <button class="nav-btn" data-route="dex"><span class="i">??</span><span class="t">Dex</span></button>
-  <button class="nav-btn" data-route="wealth"><span class="i">??</span><span class="t">Wealth</span></button>
-  <button class="nav-btn" data-route="defi"><span class="i">??</span><span class="t">DeFi</span></button>
-  <button class="nav-btn" data-route="bots"><span class="i">??</span><span class="t">Bot Army</span></button>
-  <button class="nav-btn" data-route="learn"><span class="i">??</span><span class="t">Learn Zone</span></button>
-</nav>
+      <button class="nav-btn" data-route="home"><span class="i">ðŸ </span><span class="t">Home</span></button>
+      <button class="nav-btn" data-route="pulse"><span class="i">ðŸ“ˆ</span><span class="t">Pulse</span></button>
+      <button class="nav-btn" data-route="dex"><span class="i">ðŸ”„</span><span class="t">Dex</span></button>
+      <button class="nav-btn" data-route="wealth"><span class="i">ðŸ’¼</span><span class="t">Wealth</span></button>
+      <button class="nav-btn active" data-route="defi"><span class="i">ðŸ¦</span><span class="t">DeFi</span></button>
+      <button class="nav-btn" data-route="bots"><span class="i">ðŸ¤–</span><span class="t">Bot Army</span></button>
+      <button class="nav-btn" data-route="learn"><span class="i">ðŸŽ“</span><span class="t">Learn Zone</span></button>
+    </nav>
 
     <div class="nav-spacer"></div>
     <nav class="nav-group">
-  <button class="nav-btn" data-route="home"><span class="i">??</span><span class="t">Home</span></button>
-  <button class="nav-btn" data-route="pulse"><span class="i">??</span><span class="t">Pulse</span></button>
-  <button class="nav-btn" data-route="dex"><span class="i">??</span><span class="t">Dex</span></button>
-  <button class="nav-btn" data-route="wealth"><span class="i">??</span><span class="t">Wealth</span></button>
-  <button class="nav-btn" data-route="defi"><span class="i">??</span><span class="t">DeFi</span></button>
-  <button class="nav-btn" data-route="bots"><span class="i">??</span><span class="t">Bot Army</span></button>
-  <button class="nav-btn" data-route="learn"><span class="i">??</span><span class="t">Learn Zone</span></button>
-</nav>
+      <button class="nav-btn" data-route="settings"><span class="i">âš™ï¸</span><span class="t">Settings</span></button>
+      <button class="nav-btn" data-route="login"><span class="i">ðŸ”’</span><span class="t">User Login</span></button>
+      <button class="nav-btn" data-route="mt"><span class="i">ðŸ“Š</span><span class="t">MT4/MT5 Account</span></button>
+    </nav>
   </aside>
 
   <main class="main">
@@ -81,14 +77,14 @@
       <span class="badge left">Live Mode</span>
       <div class="topbar-title">DeFi Hub</div>
       <div class="spacer"></div>
-      <div class="wallet" id="wallet-open"><span>👛</span><strong id="wallet-status">Disconnected</strong></div>
+      <div class="wallet" id="wallet-open"><span>ðŸ‘›</span><strong id="wallet-status">Disconnected</strong></div>
     </div>
 
     <!-- Content -->
     <div class="content defi-wrap">
       <!-- Hero -->
       <section class="defi-hero section">
-        <h2>One-click DeFi — staking, lending, yield & bridges</h2>
+        <h2>One-click DeFi â€” staking, lending, yield & bridges</h2>
         <div class="muted">Pick a chain, choose a category, jump straight in.</div>
         <div class="defi-controls" id="defiFilters">
           <div class="segrow">
@@ -141,7 +137,7 @@
   });
 })();
 
-/* Simple data list (curated) — chain + category tags */
+/* Simple data list (curated) â€” chain + category tags */
 (() => {
   const data = [
     // Lending
@@ -194,7 +190,7 @@
     grid.innerHTML = list.map(d => `
       <div class="dcard" data-chain="${(d.chain||[]).join(',')}" data-cat="${(d.cat||[]).join(',')}">
         <div class="row">
-          <div class="logo">${d.logo||'•'}</div>
+          <div class="logo">${d.logo||'â€¢'}</div>
           <div>
             <div class="title">${d.name}</div>
             <div class="muted">${d.blurb||''}</div>
@@ -239,7 +235,7 @@
     pulse:'pulse.html',
     dex:'dex.html',
     wealth:'wealth.html',
-    defi:'defi.html',    // ? added / replacing Market Place
+    defi:'defi.html',    // ✅ added / replacing Market Place
     bots:'bots.html',
     learn:'learn.html',
     settings:'settings.html',
@@ -261,7 +257,7 @@
     pulse:'pulse.html',
     dex:'dex.html',
     wealth:'wealth.html',
-    defi:'defi.html',    // ? DeFi added, Market Place removed
+    defi:'defi.html',    // ✅ DeFi added, Market Place removed
     bots:'bots.html',
     learn:'learn.html',
     settings:'settings.html',

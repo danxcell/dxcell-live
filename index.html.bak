@@ -1,4 +1,4 @@
-
+﻿
 <!DOCTYPE html>
 
 <html>
@@ -26,23 +26,20 @@
 <span class="brand-text">XLT</span>
 </div>
 <nav class="nav-group">
-  <button class="nav-btn" data-route="home"><span class="i">??</span><span class="t">Home</span></button>
-  <button class="nav-btn" data-route="pulse"><span class="i">??</span><span class="t">Pulse</span></button>
-  <button class="nav-btn" data-route="dex"><span class="i">??</span><span class="t">Dex</span></button>
-  <button class="nav-btn" data-route="wealth"><span class="i">??</span><span class="t">Wealth</span></button>
-  <button class="nav-btn" data-route="defi"><span class="i">??</span><span class="t">DeFi</span></button>
-  <button class="nav-btn" data-route="bots"><span class="i">??</span><span class="t">Bot Army</span></button>
-  <button class="nav-btn" data-route="learn"><span class="i">??</span><span class="t">Learn Zone</span></button>
+<button class="nav-btn active" data-route="home"><span class="i">Ã°Å¸ÂÂ </span><span class="t">Home</span></button>
+<button class="nav-btn" data-route="pulse"><span class="i">Ã°Å¸â€œË†</span><span class="t">Pulse</span></button>
+<button class="nav-btn" data-route="dex"><span class="i">Ã°Å¸â€â€ž</span><span class="t">Dex</span></button>
+<button class="nav-btn" data-route="wealth"><span class="i">Ã°Å¸â€™Â¼</span><span class="t">Wealth</span></button>
+<button class="nav-btn" data-route="defi"><span class="i">Ã°Å¸ÂÂ¦</span><span class="t">DeFi</span></button>
+    <button class="nav-btn" data-route="bots"><span class="i">Ã°Å¸Â¤â€“</span><span class="t">Bot Army</span></button>
+<button class="nav-btn" data-route="defi"><span class="i">🏦</span><span class="t">DeFi</span></button>
+<button class="nav-btn" data-route="learn"><span class="i">Ã°Å¸Å½â€œ</span><span class="t">Learn Zone</span></button>
 </nav>
 <div class="nav-spacer"></div>
 <nav class="nav-group">
-  <button class="nav-btn" data-route="home"><span class="i">??</span><span class="t">Home</span></button>
-  <button class="nav-btn" data-route="pulse"><span class="i">??</span><span class="t">Pulse</span></button>
-  <button class="nav-btn" data-route="dex"><span class="i">??</span><span class="t">Dex</span></button>
-  <button class="nav-btn" data-route="wealth"><span class="i">??</span><span class="t">Wealth</span></button>
-  <button class="nav-btn" data-route="defi"><span class="i">??</span><span class="t">DeFi</span></button>
-  <button class="nav-btn" data-route="bots"><span class="i">??</span><span class="t">Bot Army</span></button>
-  <button class="nav-btn" data-route="learn"><span class="i">??</span><span class="t">Learn Zone</span></button>
+<button class="nav-btn" data-route="settings"><span class="i">Ã¢Å¡â„¢Ã¯Â¸Â</span><span class="t">Settings</span></button>
+<button class="nav-btn" data-route="login"><span class="i">Ã°Å¸â€â€™</span><span class="t">User Login</span></button>
+<button class="nav-btn" data-route="mt"><span class="i">Ã°Å¸â€œÅ </span><span class="t">MT4/MT5 Account</span></button>
 </nav>
 </aside>
 <main class="main">
@@ -51,7 +48,7 @@
 <div class="topbar-title">Alpha Terminal</div>
 <div class="spacer"></div>
 <div class="wallet" id="wallet-open">
-<span>ðŸ‘›</span>
+<span>Ã°Å¸â€˜â€º</span>
 <strong id="wallet-status">Disconnected</strong>
 </div>
 </div>
@@ -68,7 +65,7 @@
 <div class="grid-2">
 <section class="card chart-card">
 <header class="card-head">
-<h2 class="card-title" id="chartTitle">Chart â€” Selected Asset</h2>
+<h2 class="card-title" id="chartTitle">Chart Ã¢â‚¬â€ Selected Asset</h2>
 </header>
 <div class="chart-box" id="chartBox"></div>
 </section>
@@ -97,7 +94,7 @@
 </div>
 <section class="card alpha-matrix" id="alphaMatrix">
 <header class="card-head">
-<h2 class="card-title">Alpha Matrix â€” <span id="amSymbol">â€”</span> <span class="muted" id="amPeriod"></span></h2>
+<h2 class="card-title">Alpha Matrix Ã¢â‚¬â€ <span id="amSymbol">Ã¢â‚¬â€</span> <span class="muted" id="amPeriod"></span></h2>
 </header>
 <div class="am-controls" id="amControls">
 <button class="am-pill active" data-filter="all">All</button>
@@ -108,16 +105,16 @@
 </div>
 <div class="am-grid" id="amGrid"></div>
 <div class="am-summary" id="amSummary">
-<div class="am-meter bull"><div class="label">Bull</div><div class="val" id="amBull">â€”</div></div>
-<div class="am-meter neutral"><div class="label">Neutral</div><div class="val" id="amNeutral">â€”</div></div>
-<div class="am-meter bear"><div class="label">Bear</div><div class="val" id="amBear">â€”</div></div>
+<div class="am-meter bull"><div class="label">Bull</div><div class="val" id="amBull">Ã¢â‚¬â€</div></div>
+<div class="am-meter neutral"><div class="label">Neutral</div><div class="val" id="amNeutral">Ã¢â‚¬â€</div></div>
+<div class="am-meter bear"><div class="label">Bear</div><div class="val" id="amBear">Ã¢â‚¬â€</div></div>
 </div>
 </section>
 <section class="feeds-wrap">
   <div class="feeds-row" id="feedsRowRails">
     <div class="card news-feed" id="newsFeed">
       <div class="feed-header">
-        <div class="title">DXLT TERMINAL â€” X FEED</div>
+        <div class="title">DXLT TERMINAL Ã¢â‚¬â€ X FEED</div>
         <div class="filters">
           <button class="seg on" data-filter="all">All</button>
           <button class="seg" data-filter="news">News</button>
@@ -145,7 +142,7 @@
         <table id="calendarTable" class="cal-table">
           <thead>
             <tr>
-              <th>Time</th><th>Event</th><th>Prev</th><th>Forecast</th><th>Actual</th><th>Î”</th>
+              <th>Time</th><th>Event</th><th>Prev</th><th>Forecast</th><th>Actual</th><th>ÃŽâ€</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -155,14 +152,14 @@
   </div>
 </section>
 
-<div>Empty canvas â€” ready for widgets. Live mode active.</div>
+<div>Empty canvas Ã¢â‚¬â€ ready for widgets. Live mode active.</div>
 </div>
 </div>
 </main>
 </div>
 <div class="modal-backdrop" id="wallet-modal">
 <div class="modal">
-<span class="close-x" id="wallet-close">âœ•</span>
+<span class="close-x" id="wallet-close">Ã¢Å“â€¢</span>
 <h4>Connect Wallet</h4>
 <p style="color:#94a3b8;margin:0 0 8px 0">Choose a wallet:</p>
 <div class="row">
@@ -221,7 +218,7 @@
     pulse:'pulse.html',
     dex:'dex.html',
     wealth:'wealth.html',
-    defi:'defi.html',    // ? added / replacing Market Place
+    defi:'defi.html',    // ✅ added / replacing Market Place
     bots:'bots.html',
     learn:'learn.html',
     settings:'settings.html',
@@ -243,7 +240,7 @@
     pulse:'pulse.html',
     dex:'dex.html',
     wealth:'wealth.html',
-    defi:'defi.html',    // ? DeFi added, Market Place removed
+    defi:'defi.html',    // ✅ DeFi added, Market Place removed
     bots:'bots.html',
     learn:'learn.html',
     settings:'settings.html',

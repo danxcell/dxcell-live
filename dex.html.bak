@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>DXLT · Dex</title>
+  <title>DXLT Â· Dex</title>
 
   <!-- Keep your old app.css in place (if you have it).
        This new file is fully scoped and safe. -->
@@ -17,7 +17,7 @@
       <h1>Dex</h1>
     </div>
     <div class="wallet" id="wallet-open">
-      <span>👛</span><strong id="wallet-status">Disconnected</strong>
+      <span>ðŸ‘›</span><strong id="wallet-status">Disconnected</strong>
     </div>
   </header>
 
@@ -44,7 +44,7 @@
 
       <div class="filters">
         <label class="pill">
-          <span>Vol (24h) ≥</span>
+          <span>Vol (24h) â‰¥</span>
           <select id="fVol">
             <option value="0">$0</option>
             <option value="50000">$50k</option>
@@ -55,7 +55,7 @@
         </label>
 
         <label class="pill">
-          <span>Liquidity ≥</span>
+          <span>Liquidity â‰¥</span>
           <select id="fLiq">
             <option value="0">$0</option>
             <option value="50000">$50k</option>
@@ -66,7 +66,7 @@
         </label>
 
         <label class="pill">
-          <span>Market Cap ≥</span>
+          <span>Market Cap â‰¥</span>
           <select id="fCap">
             <option value="0">$0</option>
             <option value="250000">$250k</option>
@@ -99,12 +99,12 @@
 
         <!-- SEARCH + GO (your red box) -->
         <div class="search">
-          <input id="q" type="text" placeholder="Paste token address, pair URL, or type symbol…" />
+          <input id="q" type="text" placeholder="Paste token address, pair URL, or type symbolâ€¦" />
           <button id="btnGo" class="btn">Go</button>
         </div>
       </div>
 
-      <div class="hint muted">Multi-chain filters powered by Dexscreener. Click a tile to load the chart. “Go” will run the filters and update the list below.</div>
+      <div class="hint muted">Multi-chain filters powered by Dexscreener. Click a tile to load the chart. â€œGoâ€ will run the filters and update the list below.</div>
     </section>
 
     <!-- CHART + FACTS -->
@@ -120,15 +120,15 @@
       <div class="card facts">
         <div class="facts-head">
           <div>Pair Facts</div>
-          <div class="sub" id="pairSub">—</div>
+          <div class="sub" id="pairSub">â€”</div>
         </div>
         <div class="facts-grid">
-          <div><span>Price</span><strong id="fPrice">—</strong></div>
-          <div><span>24h Change</span><strong id="fChg">—</strong></div>
-          <div><span>Liquidity</span><strong id="fLiqV">—</strong></div>
-          <div><span>Mkt Cap</span><strong id="fCapV">—</strong></div>
-          <div><span>Vol 24h</span><strong id="fVolV">—</strong></div>
-          <div><span>TXNs (24h)</span><strong id="fTxV">—</strong></div>
+          <div><span>Price</span><strong id="fPrice">â€”</strong></div>
+          <div><span>24h Change</span><strong id="fChg">â€”</strong></div>
+          <div><span>Liquidity</span><strong id="fLiqV">â€”</strong></div>
+          <div><span>Mkt Cap</span><strong id="fCapV">â€”</strong></div>
+          <div><span>Vol 24h</span><strong id="fVolV">â€”</strong></div>
+          <div><span>TXNs (24h)</span><strong id="fTxV">â€”</strong></div>
         </div>
       </div>
     </section>
@@ -136,7 +136,7 @@
     <!-- MOVERS LIST (your green area) -->
     <section class="card movers">
       <div class="movers-head">
-        <div class="title">Top Movers — filtered by your selections</div>
+        <div class="title">Top Movers â€” filtered by your selections</div>
         <div class="muted">Click a tile to load the chart. Filters: chain + mode + (vol/liq/mcap) + exchange + sort.</div>
       </div>
       <div id="movers" class="movers-grid"></div>
@@ -183,7 +183,7 @@
     pulse:'pulse.html',
     dex:'dex.html',
     wealth:'wealth.html',
-    defi:'defi.html',    // ? added / replacing Market Place
+    defi:'defi.html',    // ✅ added / replacing Market Place
     bots:'bots.html',
     learn:'learn.html',
     settings:'settings.html',
@@ -205,7 +205,7 @@
     pulse:'pulse.html',
     dex:'dex.html',
     wealth:'wealth.html',
-    defi:'defi.html',    // ? DeFi added, Market Place removed
+    defi:'defi.html',    // ✅ DeFi added, Market Place removed
     bots:'bots.html',
     learn:'learn.html',
     settings:'settings.html',

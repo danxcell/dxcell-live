@@ -1,4 +1,4 @@
-
+﻿
 <!DOCTYPE html>
 
 <html>
@@ -26,32 +26,29 @@
 <span class="brand-text">XLT</span>
 </div>
 <nav class="nav-group">
-  <button class="nav-btn" data-route="home"><span class="i">??</span><span class="t">Home</span></button>
-  <button class="nav-btn" data-route="pulse"><span class="i">??</span><span class="t">Pulse</span></button>
-  <button class="nav-btn" data-route="dex"><span class="i">??</span><span class="t">Dex</span></button>
-  <button class="nav-btn" data-route="wealth"><span class="i">??</span><span class="t">Wealth</span></button>
-  <button class="nav-btn" data-route="defi"><span class="i">??</span><span class="t">DeFi</span></button>
-  <button class="nav-btn" data-route="bots"><span class="i">??</span><span class="t">Bot Army</span></button>
-  <button class="nav-btn" data-route="learn"><span class="i">??</span><span class="t">Learn Zone</span></button>
+<button class="nav-btn" data-route="home"><span class="i">ðŸ </span><span class="t">Home</span></button>
+<button class="nav-btn" data-route="pulse"><span class="i">ðŸ“ˆ</span><span class="t">Pulse</span></button>
+<button class="nav-btn" data-route="dex"><span class="i">ðŸ”„</span><span class="t">Dex</span></button>
+<button class="nav-btn" data-route="wealth"><span class="i">ðŸ’¼</span><span class="t">Wealth</span></button>
+<button class="nav-btn" data-route="defi"><span class="i">ðŸ¦</span><span class="t">DeFi</span></button>
+    <button class="nav-btn" data-route="bots"><span class="i">ðŸ¤–</span><span class="t">Bot Army</span></button>
+<button class="nav-btn" data-route="defi"><span class="i">🏦</span><span class="t">DeFi</span></button>
+<button class="nav-btn" active data-route="learn"><span class="i">ðŸŽ“</span><span class="t">Learn Zone</span></button>
 </nav>
 <div class="nav-spacer"></div>
 <nav class="nav-group">
-  <button class="nav-btn" data-route="home"><span class="i">??</span><span class="t">Home</span></button>
-  <button class="nav-btn" data-route="pulse"><span class="i">??</span><span class="t">Pulse</span></button>
-  <button class="nav-btn" data-route="dex"><span class="i">??</span><span class="t">Dex</span></button>
-  <button class="nav-btn" data-route="wealth"><span class="i">??</span><span class="t">Wealth</span></button>
-  <button class="nav-btn" data-route="defi"><span class="i">??</span><span class="t">DeFi</span></button>
-  <button class="nav-btn" data-route="bots"><span class="i">??</span><span class="t">Bot Army</span></button>
-  <button class="nav-btn" data-route="learn"><span class="i">??</span><span class="t">Learn Zone</span></button>
+<button class="nav-btn" data-route="settings"><span class="i">âš™ï¸</span><span class="t">Settings</span></button>
+<button class="nav-btn" data-route="login"><span class="i">ðŸ”’</span><span class="t">User Login</span></button>
+<button class="nav-btn" data-route="mt"><span class="i">ðŸ“Š</span><span class="t">MT4/MT5 Account</span></button>
 </nav>
 </aside>
 <main class="main">
 <div class="topbar">
   <span class="badge left">Live Mode</span>
-  <div class="topbar-title">MT4/MT5 Account</div>
+  <div class="topbar-title">Learn Zone</div>
   <div class="spacer"></div>
   <div class="wallet" id="wallet-open">
-    <span>👛</span>
+    <span>ðŸ‘›</span>
     <strong id="wallet-status">Disconnected</strong>
   </div>
 </div>
@@ -64,7 +61,7 @@
 </div>
 <div class="modal-backdrop" id="wallet-modal">
 <div class="modal">
-<span class="close-x" id="wallet-close">✕</span>
+<span class="close-x" id="wallet-close">âœ•</span>
 <h4>Connect Wallet</h4>
 <p style="color:#94a3b8;margin:0 0 8px 0">Choose a wallet:</p>
 <div class="row">
@@ -119,7 +116,7 @@
     pulse:'pulse.html',
     dex:'dex.html',
     wealth:'wealth.html',
-    defi:'defi.html',    // ? added / replacing Market Place
+    defi:'defi.html',    // ✅ added / replacing Market Place
     bots:'bots.html',
     learn:'learn.html',
     settings:'settings.html',
@@ -141,7 +138,7 @@
     pulse:'pulse.html',
     dex:'dex.html',
     wealth:'wealth.html',
-    defi:'defi.html',    // ? DeFi added, Market Place removed
+    defi:'defi.html',    // ✅ DeFi added, Market Place removed
     bots:'bots.html',
     learn:'learn.html',
     settings:'settings.html',

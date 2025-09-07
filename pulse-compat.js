@@ -1,4 +1,4 @@
-﻿// Minimal compatibility so Pulse renders even if some API routes differ
+// Minimal compatibility so Pulse renders even if some API routes differ
 (async () => {
   // Gentle fetch wrapper: returns fallback instead of throwing
   async function safeJson(url, fallback) {
