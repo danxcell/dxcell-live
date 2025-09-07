@@ -59,6 +59,9 @@
     <div class="content dex-wrap">
       <!-- Controls -->
       <section class="card dex-controls">
+        <div class="title" style="padding:0 2px">Scout</div>
+
+        <!-- chains -->
         <div class="segrow" id="dexChains">
           <button class="seg on" data-chain="all">All</button>
           <button class="seg" data-chain="solana">Solana</button>
@@ -70,6 +73,7 @@
           <button class="seg" data-chain="polygon">Polygon</button>
         </div>
 
+        <!-- presets -->
         <div class="segrow" id="dexQuick">
           <button class="seg on" data-q="trending">Gainers</button>
           <button class="seg" data-q="losers">Losers</button>
@@ -77,6 +81,56 @@
           <button class="seg" data-q="hot">Hot TXNs</button>
         </div>
 
+        <!-- filters row -->
+        <div class="dex-filters" id="dexFilters">
+          <div class="filter">
+            <label for="volMin">Vol (24h) ≥</label>
+            <select id="volMin">
+              <option value="0">$0</option>
+              <option value="100000" selected>$100k</option>
+              <option value="250000">$250k</option>
+              <option value="500000">$500k</option>
+              <option value="1000000">$1m</option>
+              <option value="5000000">$5m</option>
+            </select>
+          </div>
+          <div class="filter">
+            <label for="liqMin">Liquidity ≥</label>
+            <select id="liqMin">
+              <option value="0">$0</option>
+              <option value="100000" selected>$100k</option>
+              <option value="250000">$250k</option>
+              <option value="500000">$500k</option>
+              <option value="1000000">$1m</option>
+              <option value="5000000">$5m</option>
+            </select>
+          </div>
+          <div class="filter">
+            <label for="capMin">Market Cap ≥</label>
+            <select id="capMin">
+              <option value="0">$0</option>
+              <option value="250000">$250k</option>
+              <option value="500000">$500k</option>
+              <option value="1000000" selected>$1m</option>
+              <option value="5000000">$5m</option>
+              <option value="10000000">$10m</option>
+              <option value="50000000">$50m</option>
+              <option value="100000000">$100m</option>
+            </select>
+          </div>
+          <div class="filter">
+            <label for="sortBy">Sort by</label>
+            <select id="sortBy">
+              <option value="vol">Vol 24h</option>
+              <option value="liq">Liquidity</option>
+              <option value="cap">Market Cap</option>
+              <option value="chg">24h Change</option>
+              <option value="tx">TXNs (5m)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- search -->
         <div class="search-wrap">
           <span class="search-ico" title="Search token/pair">
             <svg viewBox="0 0 24 24" width="18" height="18">
@@ -155,9 +209,15 @@
   const sub   = $('#dexPairSub');
   const venueLinks = $('#venueLinks');
   const chainsBar = $('#dexChains');
-  const quickBar = $('#dexQuick');
+  const quickBar  = $('#dexQuick');
   const input = $('#dexSearch');
   const goBtn = $('#dexGo');
+
+  // filters
+  const volMinSel = $('#volMin');
+  const liqMinSel = $('#liqMin');
+  const capMinSel = $('#capMin');
+  const sortSel   = $('#sortBy');
 
   const facts = {
     price: $('#fPrice'),
@@ -251,7 +311,6 @@
   }
 
   async function loadMovers(key='trending'){
-    // simple keywords for Dexscreener search
     const qmap = {trending:'trending', losers:'losers', new:'new', hot:'hot'};
     const pairs = await searchDex(qmap[key] || 'trending');
     S.movers = pairs;
@@ -260,17 +319,50 @@
     if (pick) embedPair(pick);
   }
 
-  function chainPass(p){
-    if (S.chainFilter==='all') return true;
-    return (String(p.chainId||'').toLowerCase() === S.chainFilter.toLowerCase());
+  const chainPass = p => (S.chainFilter==='all') ||
+    (String(p.chainId||'').toLowerCase() === S.chainFilter.toLowerCase());
+
+  function applyNumericFilter(val, min){
+    const v = Number(val) || 0;
+    return v >= (Number(min) || 0);
+  }
+
+  function pickCap(p){
+    // prefer marketCap, fall back to fdv
+    return Number(p.marketCap ?? p.fdv ?? 0);
+  }
+
+  function sortPairs(list, key){
+    return [...list].sort((a,b)=>{
+      const m = {
+        vol: (x)=>Number(x.volume?.h24||0),
+        liq: (x)=>Number(x.liquidity?.usd||0),
+        cap: (x)=>pickCap(x),
+        chg: (x)=>Number(x.priceChange?.h24||0),
+        tx : (x)=>Number(x.txns?.m5?.buys||0)+Number(x.txns?.m5?.sells||0),
+      }[key] || ((x)=>Number(x.volume?.h24||0));
+      return m(b) - m(a);
+    });
   }
 
   function renderMovers(){
-    const list = (S.movers||[]).filter(chainPass).slice(0, 24);
+    const volMin = Number(volMinSel.value||0);
+    const liqMin = Number(liqMinSel.value||0);
+    const capMin = Number(capMinSel.value||0);
+    const sortKey = (sortSel.value||'vol');
+
+    let list = (S.movers||[]).filter(chainPass)
+      .filter(p => applyNumericFilter(p.volume?.h24, volMin))
+      .filter(p => applyNumericFilter(p.liquidity?.usd, liqMin))
+      .filter(p => applyNumericFilter(pickCap(p), capMin));
+
+    list = sortPairs(list, sortKey).slice(0, 24);
+
     if (!list.length){
-      moversGrid.innerHTML = `<div class="placeholder">No results for this chain filter.</div>`;
+      moversGrid.innerHTML = `<div class="placeholder">0 matches · ${S.chainFilter} · Vol ≥ ${fmtMoney(volMin)} · Liq ≥ ${fmtMoney(liqMin)} · Cap ≥ ${fmtMoney(capMin)}</div>`;
       return;
     }
+
     moversGrid.innerHTML = list.map(p=>{
       const chg = p.priceChange?.h24 ?? 0;
       const logo = p.info?.imageUrl || p.baseToken?.logoURI || '';
@@ -315,6 +407,10 @@
     await loadMovers(S.q);
   });
 
+  [volMinSel, liqMinSel, capMinSel, sortSel].forEach(sel=>{
+    sel.addEventListener('change', renderMovers);
+  });
+
   async function handleGo(){
     const q = input.value.trim();
     if (!q) return;
@@ -325,9 +421,9 @@
         chart.src = 'about:blank';
         return;
       }
-      const pick = res.find(chainPass) || res[0];
+      const pick = res.find(p=> (S.chainFilter==='all') || (String(p.chainId).toLowerCase()===S.chainFilter)) || res[0];
       embedPair(pick);
-      S.movers = res; // show contextual results
+      S.movers = res; // contextual results
       renderMovers();
     }catch(e){
       console.warn('search error', e);
