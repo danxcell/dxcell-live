@@ -8,7 +8,7 @@
 </head>
 <body>
 <header class="dxtl-header">
-  <img class="logo" src="logo.svg"/>
+  <img class="logo" src="logo.svg" alt="DXLT"/>
   <div class="status"><span class="pulse-dot"></span>Live Terminal</div>
 </header>
 
@@ -62,17 +62,17 @@
       <section class="card pulse-controls">
         <div class="search-wrap">
           <span class="search-ico" title="Search asset">
-            <svg viewBox="0 0 24 24">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
               <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
               <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
           </span>
-          <input id="pulseSearch" type="text" placeholder="Search asset (e.g., BTCUSDT)" list="suggestList"/>
+          <input id="pulseSearch" type="text" placeholder="Search asset (e.g., BTCUSDT)" list="suggestList" autocomplete="off"/>
           <datalist id="suggestList"></datalist>
-          <button class="btn" id="pulseSet">Set</button>
+          <button class="btn" id="pulseSet" type="button">Set</button>
         </div>
         <div class="now-playing">
-          <button class="icon-btn" id="soundBtn" title="Toggle sound">
+          <button class="icon-btn" id="soundBtn" title="Toggle sound" type="button">
             <svg viewBox="0 0 24 24" class="ico-sound"><path d="M4 9h4l4-3v12l-4-3H4z" fill="currentColor"/><path d="M16 8a5 5 0 010 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             <svg viewBox="0 0 24 24" class="ico-mute"><path d="M4 9h4l4-3v12l-4-3H4z" fill="currentColor"/><path d="M17 7l4 4m0-4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
@@ -152,7 +152,7 @@
         </div>
       </section>
 
-      <!-- Market Depth (below Signals, inside insights area) -->
+      <!-- Market Depth -->
       <section class="card depth-card" id="depthCard">
         <div class="mini-head">
           <span>Market Depth</span>
@@ -227,9 +227,9 @@
   </main>
 </div>
 
-<div class="modal-backdrop" id="wallet-modal">
-  <div class="modal">
-    <span class="close-x" id="wallet-close">✕</span>
+<div class="modal-backdrop" id="wallet-modal" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true">
+    <span class="close-x" id="wallet-close" role="button" tabindex="0" aria-label="Close">✕</span>
     <h4>Connect Wallet</h4>
     <p style="color:#94a3b8;margin:0 0 8px 0">Choose a wallet:</p>
     <div class="row">
@@ -246,21 +246,17 @@
 <footer>DXLT Neon v1.0</footer>
 
 <script src="./feeds.js"></script>
+<!-- Optional: include a tiny shim if your API routes differ
+<script src="/js/pulse-compat.js"></script>
+-->
 
 <!-- Routes -->
 <script>
 (() => {
   const routes = {
-    home: 'index.html',
-    pulse: 'pulse.html',
-    dex: 'dex.html',
-    wealth: 'wealth.html',
-    bots: 'bots.html',
-    market: 'market.html',
-    learn: 'learn.html',
-    settings: 'settings.html',
-    login: 'login.html',
-    mt: 'mt.html'
+    home:'index.html', pulse:'pulse.html', dex:'dex.html', wealth:'wealth.html',
+    bots:'bots.html', market:'market.html', learn:'learn.html',
+    settings:'settings.html', login:'login.html', mt:'mt.html'
   };
   document.querySelectorAll('.nav-btn[data-route]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -290,7 +286,7 @@
       (j.items||[]).forEach(it=>{
         const opt=document.createElement('option');
         opt.value = it.symbol;
-        opt.label = `${it.base}/${it.quote} — ${it.venues.join('/')}`;
+        opt.label = `${it.base}/${it.quote} — ${(it.venues||[]).join('/')}`;
         opt.textContent = opt.label;
         list.appendChild(opt);
       });
@@ -360,15 +356,19 @@
     if(!r.ok) throw new Error('cg/top '+r.status);
     return r.json();
   }
-  const pickCoin = (list, baseLower) => list.find(c => (c.symbol||'').toLowerCase()===baseLower) || list.find(c => (c.name||'').toLowerCase().startsWith(baseLower)) || null;
+  const pickCoin = (list, baseLower) =>
+    list.find(c => (c.symbol||'').toLowerCase()===baseLower) ||
+    list.find(c => (c.name||'').toLowerCase().startsWith(baseLower)) || null;
 
-  const fmt = (n,dp=2)=> (n==null||!isFinite(n)) ? '—' : Number(n).toLocaleString(undefined,{minimumFractionDigits:dp,maximumFractionDigits:dp});
+  const fmt = (n,dp=2)=> (n==null||!isFinite(n)) ? '—' : Number(n).toLocaleString(
+    undefined,{minimumFractionDigits:dp,maximumFractionDigits:dp});
   const badgeTrend=(p1h,p24h)=> p1h>0.8&&p24h>1?'UP':(p1h<-0.8&&p24h<-1?'DOWN':'SIDE');
   const badgeRegime=(v)=> v>4?'HIGH VOL':v>2?'MED VOL':'LOW VOL';
   const badgeRisk=(p24,vol)=> (Math.abs(p24)*.6+vol*.4)>=8?'ELEVATED':(Math.abs(p24)*.6+vol*.4)>=4?'MODERATE':'CALM';
 
   function setBadges(coin){
     const p1h  = coin.price_change_percentage_1h_in_currency ?? 0;
+    the24h:
     const p24h = coin.price_change_percentage_24h_in_currency ?? 0;
     const vol  = Math.abs(p1h)*1.2 + Math.abs(p24h)*0.5;
 
@@ -389,7 +389,12 @@
     priceEl  && (priceEl.textContent  = coin.current_price!=null ? `$${fmt(coin.current_price,2)}` : '—');
   }
 
-  function sizeCanvas(cv,w,h){ const dpr=window.devicePixelRatio||1; cv.width=Math.floor(w*dpr); cv.height=Math.floor(h*dpr); cv.style.width=w+'px'; cv.style.height=h+'px'; const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); return ctx; }
+  function sizeCanvas(cv,w,h){
+    const dpr=window.devicePixelRatio||1;
+    cv.width=Math.floor(w*dpr); cv.height=Math.floor(h*dpr);
+    cv.style.width=w+'px'; cv.style.height=h+'px';
+    const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); return ctx;
+  }
   function drawSpark(cv, vals, color='#22d3ee'){
     if(!cv||vals.length<2) return;
     const W=Math.max(cv.clientWidth||180,160), H=Math.max(cv.clientHeight||60,48), ctx=sizeCanvas(cv,W,H);
@@ -401,7 +406,26 @@
     ctx.stroke();
   }
 
-  const ECG=(()=>{let t0=0,raf=0;function draw(cv,bpm,mode='steady'){const W=cv.clientWidth||880,H=Math.max(cv.clientHeight||220,160),ctx=sizeCanvas(cv,W,H);ctx.clearRect(0,0,W,H);const mid=H*.6,msPer=60000/Math.max(40,Math.min(200,bpm)),now=performance.now();if(!t0)t0=now;const phase=((now-t0)%msPer)/msPer;ctx.strokeStyle='rgba(34,211,238,.15)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,mid);ctx.lineTo(W,mid);ctx.stroke();ctx.strokeStyle='#22d3ee';ctx.lineWidth=2;ctx.beginPath();const spikes=mode==='surge'?2:mode==='stress'?0.5:1;for(let x=0;x<=W;x++){const p=(phase+x/W)%1;const beat= p<.08?0 : p<.12?(p-.1)*-900 : p<.16?(p-.14)*900 : Math.sin((p-.16)*Math.PI*2*spikes)*.2; const amp=mode==='stress'?26:mode==='surge'?34:30; const y=mid-beat*amp; x?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.stroke();}function loop(cv,bpmFn,modeFn){cancelAnimationFrame(raf);const tick=()=>{draw(cv,bpmFn(),modeFn());raf=requestAnimationFrame(tick)};raf=requestAnimationFrame(tick);}return{loop};})();
+  const ECG=(()=>{let t0=0,raf=0;
+    function draw(cv,bpm,mode='steady'){
+      const W=cv.clientWidth||880,H=Math.max(cv.clientHeight||220,160),ctx=sizeCanvas(cv,W,H);
+      ctx.clearRect(0,0,W,H);
+      const mid=H*.6,msPer=60000/Math.max(40,Math.min(200,bpm)),now=performance.now(); if(!t0)t0=now;
+      const phase=((now-t0)%msPer)/msPer;
+      ctx.strokeStyle='rgba(34,211,238,.15)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,mid);ctx.lineTo(W,mid);ctx.stroke();
+      ctx.strokeStyle='#22d3ee';ctx.lineWidth=2;ctx.beginPath();
+      const spikes=mode==='surge'?2:mode==='stress'?0.5:1;
+      for(let x=0;x<=W;x++){const p=(phase+x/W)%1;const beat= p<.08?0 : p<.12?(p-.1)*-900 : p<.16?(p-.14)*900 : Math.sin((p-.16)*Math.PI*2*spikes)*.2;
+        const amp=mode==='stress'?26:mode==='surge'?34:30; const y=mid-beat*amp; x?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+      ctx.stroke();
+    }
+    function loop(cv,bpmFn,modeFn){
+      cancelAnimationFrame(raf);
+      const tick=()=>{draw(cv,bpmFn(),modeFn());raf=requestAnimationFrame(tick)};
+      raf=requestAnimationFrame(tick);
+    }
+    return{loop};
+  })();
 
   async function tick(){
     const sym = getSymbol(), base = baseFromPair(sym);
@@ -429,11 +453,14 @@
   window.addEventListener('dxlt:set-symbol', tick);
   cECG && ECG.loop(cECG, ()=>S.bpm, ()=>S.state);
 
-  document.addEventListener('DOMContentLoaded', ()=>{ if (chipSym && chipSym.textContent.trim()!=='—') S.symbol = chipSym.textContent.trim().toUpperCase(); tick(); setInterval(tick,15000); });
+  document.addEventListener('DOMContentLoaded', ()=>{
+    if (chipSym && chipSym.textContent.trim()!=='—') S.symbol = chipSym.textContent.trim().toUpperCase();
+    tick(); setInterval(tick,15000);
+  });
 })();
 </script>
 
-<!-- Depth wiring (smart venue + tz + spark + gauge) -->
+<!-- Depth wiring -->
 <script id="depth-wire">
 (() => {
   const $  = (s) => document.querySelector(s);
@@ -539,7 +566,11 @@
     }catch(e){ console.warn('depth fetch error', e); }
   }
 
-  const tick = ()=> loadDepth((()=>{const t=document.getElementById('pulseSymbol')?.textContent.trim(); if(t&&t!=='—') return t.toUpperCase(); return window.CURRENT?.symbol?.toUpperCase() || 'BTCUSDT';})());
+  const tick = ()=> loadDepth((()=>{
+    const t=document.getElementById('pulseSymbol')?.textContent.trim();
+    if(t&&t!=='—') return t.toUpperCase();
+    return window.CURRENT?.symbol?.toUpperCase() || 'BTCUSDT';
+  })());
   document.addEventListener('DOMContentLoaded', ()=>{ tick(); setInterval(tick,15000); });
   window.addEventListener('dxlt:set-symbol', tick);
 
@@ -551,7 +582,7 @@
 })();
 </script>
 
-<!-- Positions & Liquidity live wiring (donut + heatmaps) -->
+<!-- Positions & Liquidity -->
 <script id="positions-wire">
 (() => {
   const $ = (s) => document.querySelector(s);
@@ -568,7 +599,6 @@
   const tfWrap     = $('#ppTf');
   const tfOut      = $('#ppTfLabel');
 
-  // timeframe is visual only for now (order book is real-time)
   let tfMin = 5;
 
   tfWrap?.addEventListener('click', (e) => {
@@ -587,7 +617,6 @@
     return 'BTCUSDT';
   };
 
-  // Drawing helpers
   function sizeCanvas(cv, w, h){
     const dpr = window.devicePixelRatio || 1;
     cv.width  = Math.floor(w * dpr);
@@ -638,7 +667,6 @@
     const ctx = sizeCanvas(cv, W, H);
     ctx.clearRect(0,0,W,H);
 
-    // Sort: long shows bids below last (desc), short shows asks above last (asc)
     const filtered = side === 'long'
       ? levels.filter(([p]) => p < last).sort((a,b)=>b[0]-a[0])
       : levels.filter(([p]) => p > last).sort((a,b)=>a[0]-b[0]);
@@ -716,6 +744,124 @@
 })();
 </script>
 
+<!-- Top 20 wiring (mcap / movers 1h / movers 24h) -->
+<script id="top20-wire">
+(() => {
+  const grid   = document.getElementById('assetGrid');
+  const modeUI = document.getElementById('topMode');
+  if (!grid || !modeUI) return;
+
+  let mode = 'mcap';
+  let cache = { time: 0, items: [] };
+
+  const fmt = (n, dp=2) => (n==null||!isFinite(n)) ? '—' :
+    Number(n).toLocaleString(undefined, { minimumFractionDigits: dp, maximumFractionDigits: dp });
+
+  async function fetchTop(limit = 250) {
+    if (Date.now() - cache.time < 15000 && cache.items.length) return cache.items;
+    const r = await fetch(`/api/cg/top?limit=${limit}`, { cache: 'no-store' });
+    const j = await r.json();
+    cache = { time: Date.now(), items: Array.isArray(j) ? j : [] };
+    return cache.items;
+  }
+
+  function pickList(items, mode) {
+    const safeNum = (v, d=0) => Number.isFinite(Number(v)) ? Number(v) : d;
+    if (mode === 'mcap') {
+      return [...items]
+        .filter(x => x.market_cap_rank != null)
+        .sort((a,b) => a.market_cap_rank - b.market_cap_rank)
+        .slice(0, 20);
+    }
+    if (mode === 'movers1h') {
+      return [...items]
+        .map(x => ({...x, mover: Math.abs(safeNum(x.price_change_percentage_1h_in_currency))}))
+        .sort((a,b) => b.mover - a.mover)
+        .slice(0, 20);
+    }
+    return [...items]
+      .map(x => ({...x, mover: Math.abs(safeNum(x.price_change_percentage_24h_in_currency))}))
+      .sort((a,b) => b.mover - a.mover)
+      .slice(0, 20);
+  }
+
+  function symbolFor(x) {
+    const base = String(x.symbol || x.name || '').toUpperCase().replace(/[^A-Z0-9]/g,'');
+    return (base ? base : 'BTC') + 'USDT';
+  }
+
+  function changeBadge(pct) {
+    if (!Number.isFinite(pct)) return '—';
+    const s = pct >= 0 ? '+' : '';
+    return `${s}${fmt(pct, 2)}%`;
+  }
+
+  function render(items) {
+    grid.innerHTML = '';
+    items.forEach(x => {
+      const sym  = symbolFor(x);
+      const price= x.current_price != null ? `$${fmt(x.current_price, 2)}` : '—';
+      const p1h  = Number(x.price_change_percentage_1h_in_currency);
+      const p24h = Number(x.price_change_percentage_24h_in_currency);
+      const green = (v) => Number.isFinite(v) && v > 0;
+
+      const card = document.createElement('button');
+      card.className = 'asset-card';
+      card.type = 'button';
+      card.dataset.symbol = sym;
+      card.innerHTML = `
+        <div class="row">
+          <div class="left">
+            <div class="sym">${(x.symbol || x.name || '').toUpperCase()}</div>
+            <div class="name muted">#${x.market_cap_rank ?? '—'} ${x.name ?? ''}</div>
+          </div>
+          <div class="right">
+            <div class="price">${price}</div>
+            <div class="changes">
+              <span class="chip ${green(p1h)?'up':'down'}">${changeBadge(p1h)}</span>
+              <span class="chip ${green(p24h)?'up':'down'}">${changeBadge(p24h)}</span>
+            </div>
+          </div>
+        </div>`;
+      card.addEventListener('click', () => {
+        const chip = document.getElementById('pulseSymbol');
+        if (chip) chip.textContent = sym;
+        window.CURRENT = Object.assign({}, window.CURRENT, { symbol: sym });
+        window.dispatchEvent(new CustomEvent('dxlt:set-symbol', { detail: { symbol: sym }}));
+        const el = document.querySelector('.pulse-wrap');
+        el?.scrollIntoView?.({ behavior:'smooth', block:'start' });
+      });
+      grid.appendChild(card);
+    });
+  }
+
+  async function refresh() {
+    try {
+      const all = await fetchTop(250);
+      const top = pickList(all, mode);
+      render(top);
+    } catch (e) {
+      console.warn('top20 refresh error', e);
+      grid.innerHTML = `<div class="muted" style="padding:8px">Top list unavailable.</div>`;
+    }
+  }
+
+  modeUI.addEventListener('click', (e) => {
+    const b = e.target.closest('button.seg');
+    if (!b) return;
+    modeUI.querySelectorAll('button.seg').forEach(x => x.classList.toggle('on', x === b));
+    mode = String(b.dataset.mode || 'mcap');
+    refresh();
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    refresh();
+    setInterval(refresh, 20000);
+  });
+})();
+</script>
+
+<!-- (Optional) If you still need other site-wide code, include them once -->
 <script src="./bots.js"></script>
 <script src="./pulse.js"></script>
 </body>
