@@ -1,0 +1,354 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>DXLT Â· DeFi Hub</title>
+  <link href="./defi.css" rel="stylesheet"/>
+</head>
+<body class="defi-page">
+<header class="dxtl-header">
+  <img class="logo" src="logo.svg" alt="DXLT"/>
+  <div class="status"><span class="pulse-dot"></span>Live Mode</div>
+</header>
+
+<div class="app">
+  <!-- Rail -->
+  <aside class="nav-rail">
+    <div class="brand">
+      <svg aria-hidden="true" class="brand-icon" viewBox="0 0 48 48">
+        <defs>
+          <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stop-color="#60A5FA" />
+            <stop offset="1" stop-color="#22D3EE" />
+          </linearGradient>
+        </defs>
+        <circle cx="24" cy="24" r="20" fill="url(#g)" opacity=".25"></circle>
+        <circle cx="24" cy="24" r="19" fill="none" stroke="url(#g)" stroke-width="2" opacity=".6"></circle>
+        <polygon points="21,17 33,24 21,31" fill="url(#g)"></polygon>
+      </svg>
+      <span class="brand-text">XLT</span>
+    </div>
+
+    <nav class="nav-group">
+      <button class="nav-btn" data-route="home"><span class="i">ðŸ </span><span class="t">Home</span></button>
+      <button class="nav-btn" data-route="pulse"><span class="i">ðŸ“ˆ</span><span class="t">Pulse</span></button>
+      <button class="nav-btn" data-route="dex"><span class="i">ðŸ”„</span><span class="t">Dex</span></button>
+      <button class="nav-btn" data-route="wealth"><span class="i">ðŸ’¼</span><span class="t">Wealth</span></button>
+
+      <!-- NEW: DeFi Hub -->
+      <button class="nav-btn active" data-route="defi"><span class="i">ðŸ¦</span><span class="t">DeFi</span></button>
+
+      <button class="nav-btn" data-route="bots"><span class="i">ðŸ¤–</span><span class="t">Bot Army</span></button>
+      <button class="nav-btn" data-route="market"><span class="i">ðŸ›’</span><span class="t">Market Place</span></button>
+      <button class="nav-btn" data-route="learn"><span class="i">ðŸŽ“</span><span class="t">Learn Zone</span></button>
+    </nav>
+
+    <div class="nav-spacer"></div>
+    <nav class="nav-group">
+      <button class="nav-btn" data-route="settings"><span class="i">âš™ï¸</span><span class="t">Settings</span></button>
+      <button class="nav-btn" data-route="login"><span class="i">ðŸ”’</span><span class="t">User Login</span></button>
+      <button class="nav-btn" data-route="mt"><span class="i">ðŸ“Š</span><span class="t">MT4/MT5 Account</span></button>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <!-- Topbar -->
+    <div class="topbar">
+      <span class="badge left">Live Mode</span>
+      <div class="topbar-title">DeFi Hub</div>
+      <div class="spacer"></div>
+      <div class="wallet" id="wallet-open">
+        <span>ðŸ‘›</span><strong id="wallet-status">Disconnected</strong>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content defi-wrap">
+      <!-- HERO -->
+      <section class="card hero">
+        <div class="hero-left">
+          <h2 class="hero-title">Bankless, but better.</h2>
+          <p class="hero-sub">One screen for staking, lending, restaking, points farming, and cross-chain liquidity. Curated to what crypto actually uses.</p>
+          <div class="hero-actions">
+            <div class="segrow small" id="quickIntents">
+              <button class="seg on" data-intent="earn">Safe Yield</button>
+              <button class="seg" data-intent="restake">Restaking</button>
+              <button class="seg" data-intent="points">Points / Airdrop</button>
+              <button class="seg" data-intent="stable">Stablecoin</button>
+              <button class="seg" data-intent="perps">Perps Yield</button>
+              <button class="seg" data-intent="solana">Solana</button>
+              <button class="seg" data-intent="base">Base</button>
+            </div>
+          </div>
+        </div>
+        <div class="hero-art">
+          <div class="ring"></div>
+        </div>
+      </section>
+
+      <!-- FILTER BAR -->
+      <section class="card filterbar">
+        <div class="segrow" id="chainFilter">
+          <button class="seg on" data-chain="all">All</button>
+          <button class="seg" data-chain="ethereum">Ethereum</button>
+          <button class="seg" data-chain="base">Base</button>
+          <button class="seg" data-chain="arbitrum">Arbitrum</button>
+          <button class="seg" data-chain="optimism">Optimism</button>
+          <button class="seg" data-chain="polygon">Polygon</button>
+          <button class="seg" data-chain="bsc">BSC</button>
+          <button class="seg" data-chain="solana">Solana</button>
+        </div>
+        <div class="segrow" id="typeFilter">
+          <button class="seg on" data-type="all">All</button>
+          <button class="seg" data-type="staking">Liquid Staking</button>
+          <button class="seg" data-type="restaking">Restaking</button>
+          <button class="seg" data-type="lending">Lending</button>
+          <button class="seg" data-type="dex">DEX / Yield</button>
+          <button class="seg" data-type="bridge">Bridge</button>
+          <button class="seg" data-type="stable">Stablecoins</button>
+          <button class="seg" data-type="aggregator">Aggregators</button>
+          <button class="seg" data-type="perps">Perps</button>
+          <button class="seg" data-type="tools">Tools</button>
+        </div>
+        <div class="search-wrap">
+          <span class="search-ico">
+            <svg viewBox="0 0 24 24" width="18" height="18">
+              <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+              <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <input id="q" type="text" placeholder="Search protocols, tokens, or featuresâ€¦"/>
+          <button class="btn" id="btnClear">Clear</button>
+        </div>
+      </section>
+
+      <!-- CARDS GRID -->
+      <section class="card">
+        <header class="card-head center">
+          <h3 class="card-title">Curated Protocols</h3>
+          <span class="muted">Click to open official sites in a new tab. Filters above refine the grid.</span>
+        </header>
+        <div id="grid" class="grid-cards"></div>
+      </section>
+
+      <!-- SAFETY -->
+      <section class="card safety">
+        <header class="card-head"><h3 class="card-title">Safety & Self-Custody</h3></header>
+        <div class="safety-grid">
+          <div class="tip">
+            <div class="t">ðŸ” Revoke approvals</div>
+            <div class="s"><a class="pill" target="_blank" rel="noopener" href="https://revoke.cash">revoke.cash</a><a class="pill" target="_blank" rel="noopener" href="https://app.unrekt.net">Unrekt</a></div>
+          </div>
+          <div class="tip">
+            <div class="t">ðŸ§® Track portfolio</div>
+            <div class="s"><a class="pill" target="_blank" rel="noopener" href="https://debank.com">DeBank</a><a class="pill" target="_blank" rel="noopener" href="https://zapper.fi">Zapper</a><a class="pill" target="_blank" rel="noopener" href="https://zerion.io">Zerion</a></div>
+          </div>
+          <div class="tip">
+            <div class="t">ðŸ“Š Compare yields</div>
+            <div class="s"><a class="pill" target="_blank" rel="noopener" href="https://defillama.com/yields">DefiLlama</a><a class="pill" target="_blank" rel="noopener" href="https://defillama.com/chain">Chains</a></div>
+          </div>
+          <div class="tip">
+            <div class="t">âš ï¸ DYOR</div>
+            <div class="s">Smart-contract risk, bridge risk, and peg risk are real. Use hardware wallets and test with small amounts first.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<footer>DXLT Neon v1.0</footer>
+
+<script>
+/* routes */
+(() => {
+  const routes = {
+    home:'index.html', pulse:'pulse.html', dex:'dex.html',
+    wealth:'wealth.html', defi:'defi.html',
+    bots:'bots.html', market:'market.html', learn:'learn.html',
+    settings:'settings.html', login:'login.html', mt:'mt.html'
+  };
+  document.querySelectorAll('.nav-btn[data-route]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const r = btn.getAttribute('data-route');
+      if (routes[r]) window.location.href = routes[r];
+    });
+  });
+})();
+
+/* ====== DeFi directory (curated) ====== */
+/* Each item: { name, url, chains[], type, tags[], blurb } */
+const CATALOG = [
+  // Liquid staking
+  {name:'Lido', url:'https://lido.fi', chains:['ethereum'], type:'staking', tags:['stETH','LST'], blurb:'Liquid staking for ETH (stETH).'},
+  {name:'Rocket Pool', url:'https://rocketpool.net', chains:['ethereum'], type:'staking', tags:['rETH','node'], blurb:'Decentralized ETH liquid staking (rETH).'},
+  {name:'Frax Ether', url:'https://frax.com/frxeth', chains:['ethereum'], type:'staking', tags:['frxETH','LST'], blurb:'Fraxâ€™s ETH LST (frxETH/sfrxETH).'},
+  {name:'Marinade', url:'https://marinade.finance', chains:['solana'], type:'staking', tags:['mSOL'], blurb:'Liquid staking on Solana (mSOL).'},
+  {name:'Jito', url:'https://jito.network', chains:['solana'], type:'staking', tags:['jitoSOL','MEV'], blurb:'Solana liquid staking with MEV rewards.'},
+
+  // Restaking
+  {name:'EigenLayer', url:'https://app.eigenlayer.xyz', chains:['ethereum'], type:'restaking', tags:['AVS','points'], blurb:'Restake ETH/LST to secure Actively Validated Services.'},
+  {name:'ether.fi', url:'https://ether.fi', chains:['ethereum'], type:'restaking', tags:['eETH','points'], blurb:'Non-custodial LST with restaking.'},
+  {name:'KelpDAO', url:'https://kelpdao.xyz', chains:['ethereum'], type:'restaking', tags:['rsETH'], blurb:'LRT + restaking strategies.'},
+  {name:'Puffer', url:'https://puffer.fi', chains:['ethereum'], type:'restaking', tags:['pufETH'], blurb:'Restaking-native LST.'},
+
+  // Lending
+  {name:'Aave', url:'https://app.aave.com', chains:['ethereum','polygon','arbitrum','optimism','base','bsc'], type:'lending', tags:['bluechip'], blurb:'Blue-chip lending & borrowing.'},
+  {name:'Compound', url:'https://compound.finance', chains:['ethereum'], type:'lending', tags:['cTokens'], blurb:'OG lending protocol.'},
+  {name:'Morpho', url:'https://app.morpho.org', chains:['ethereum'], type:'lending', tags:['optimize'], blurb:'P2P layer on top of Aave/Compound.'},
+  {name:'Radiant', url:'https://app.radiant.capital', chains:['arbitrum','bsc','ethereum'], type:'lending', tags:['omnichain'], blurb:'Omnichain money market.'},
+  {name:'Venus', url:'https://app.venus.io', chains:['bsc'], type:'lending', tags:['BSC'], blurb:'Leading BSC lending.'},
+  {name:'Kamino', url:'https://app.kamino.finance', chains:['solana'], type:'lending', tags:['SOL'], blurb:'Lending, vaults & perps on Solana.'},
+
+  // DEX / yield
+  {name:'Uniswap', url:'https://app.uniswap.org', chains:['ethereum','base','arbitrum','optimism','polygon'], type:'dex', tags:['AMM','LP'], blurb:'Frontier AMM & LP.'},
+  {name:'Curve', url:'https://curve.fi', chains:['ethereum','arbitrum','optimism','polygon','base'], type:'dex', tags:['stable','LP'], blurb:'Stablecoin AMM & gauge wars.'},
+  {name:'Balancer', url:'https://app.balancer.fi', chains:['ethereum','arbitrum','polygon'], type:'dex', tags:['weighted'], blurb:'Weighted pools & boosted yield.'},
+  {name:'PancakeSwap', url:'https://pancakeswap.finance', chains:['bsc','ethereum','base'], type:'dex', tags:['BSC'], blurb:'BSC native DEX, multi-chain.'},
+  {name:'QuickSwap', url:'https://quickswap.exchange', chains:['polygon'], type:'dex', tags:['Polygon'], blurb:'Polygon native DEX.'},
+  {name:'Jupiter', url:'https://jup.ag', chains:['solana'], type:'dex', tags:['aggregator','SOL'], blurb:'Solanaâ€™s swap aggregator.'},
+  {name:'Raydium', url:'https://raydium.io', chains:['solana'], type:'dex', tags:['AMM','SOL'], blurb:'AMM on Solana.'},
+  {name:'Orca', url:'https://www.orca.so', chains:['solana'], type:'dex', tags:['concentrated'], blurb:'CLAMM on Solana.'},
+  {name:'Pendle', url:'https://app.pendle.finance', chains:['ethereum','arbitrum','base'], type:'dex', tags:['yield-trading'], blurb:'Trade tokenized yield & points.'},
+
+  // Perps
+  {name:'GMX', url:'https://gmx.io', chains:['arbitrum','avalanche'], type:'perps', tags:['GLP'], blurb:'Perps & spot with GLP liquidity.'},
+  {name:'dYdX', url:'https://dydx.exchange', chains:['dydx'], type:'perps', tags:['Cosmos'], blurb:'Perps on dYdX chain.'},
+  {name:'Drift', url:'https://app.drift.trade', chains:['solana'], type:'perps', tags:['SOL'], blurb:'Perps on Solana.'},
+
+  // Bridges
+  {name:'Stargate', url:'https://stargate.finance/transfer', chains:['ethereum','bsc','arbitrum','optimism','base','polygon','avalanche'], type:'bridge', tags:['LayerZero'], blurb:'Bridge & liquidity router.'},
+  {name:'Across', url:'https://across.to', chains:['ethereum','arbitrum','optimism','polygon','base','scroll'], type:'bridge', tags:['fast'], blurb:'Fast L2 bridging.'},
+  {name:'Hop', url:'https://app.hop.exchange', chains:['ethereum','arbitrum','optimism','polygon','gnosis'], type:'bridge', tags:['bridge'], blurb:'Popular L2 bridge.'},
+  {name:'Wormhole', url:'https://wormhole.com', chains:['solana','ethereum','base','arbitrum','optimism','polygon','cosmos'], type:'bridge', tags:['x-chain'], blurb:'Generalized cross-chain messaging.'},
+
+  // Stablecoins & mints
+  {name:'MakerDAO / Spark', url:'https://spark.fi', chains:['ethereum'], type:'stable', tags:['DAI','borrow'], blurb:'DAI borrow via Spark Lend.'},
+  {name:'Frax', url:'https://frax.com', chains:['ethereum'], type:'stable', tags:['FRAX','FXS'], blurb:'Frax stable & ecosystem.'},
+  {name:'Aave GHO', url:'https://gho.aave.com', chains:['ethereum'], type:'stable', tags:['GHO'], blurb:'Aave native overcollateralized stable.'},
+
+  // Aggregators & vaults
+  {name:'Yearn', url:'https://yearn.fi', chains:['ethereum'], type:'aggregator', tags:['vaults'], blurb:'Yield vaults on blue chips.'},
+  {name:'Beefy', url:'https://app.beefy.com', chains:['bsc','polygon','base','arbitrum','optimism','avalanche','fantom'], type:'aggregator', tags:['auto-compound'], blurb:'Multi-chain auto-compound vaults.'},
+  {name:'Defi Saver', url:'https://defisaver.com', chains:['ethereum'], type:'aggregator', tags:['automation'], blurb:'Automation for Maker/Aave/Compound.'},
+
+  // Tools
+  {name:'DeBank', url:'https://debank.com', chains:['multi'], type:'tools', tags:['portfolio'], blurb:'Portfolio & wallet intel.'},
+  {name:'Zapper', url:'https://zapper.fi', chains:['multi'], type:'tools', tags:['portfolio'], blurb:'Portfolio & discovery.'},
+  {name:'Zerion', url:'https://zerion.io', chains:['multi'], type:'tools', tags:['portfolio'], blurb:'Portfolio & on-chain actions.'},
+  {name:'DefiLlama', url:'https://defillama.com', chains:['multi'], type:'tools', tags:['analytics'], blurb:'TVL, yields, and dashboards.'},
+  {name:'Dexscreener', url:'https://dexscreener.com', chains:['multi'], type:'tools', tags:['charts'], blurb:'Charts & pairs across DEXs.'},
+  {name:'revoke.cash', url:'https://revoke.cash', chains:['multi'], type:'tools', tags:['security'], blurb:'Revoke token approvals.'},
+];
+
+/* State + filters */
+const S = { chain:'all', type:'all', intent:'earn', q:'' };
+
+const grid = document.getElementById('grid');
+const chainFilter = document.getElementById('chainFilter');
+const typeFilter  = document.getElementById('typeFilter');
+const quickIntents = document.getElementById('quickIntents');
+const qInput = document.getElementById('q');
+const btnClear = document.getElementById('btnClear');
+
+function applyFilters(){
+  const q = S.q.trim().toLowerCase();
+  let list = CATALOG.slice();
+
+  // intent presets
+  if (S.intent==='earn'){
+    list = list.filter(x => ['staking','lending','aggregator','dex'].includes(x.type));
+  } else if (S.intent==='restake'){
+    list = list.filter(x => x.type==='restaking' || x.tags.includes('LRT') || x.tags.includes('points'));
+  } else if (S.intent==='points'){
+    list = list.filter(x => x.tags.includes('points') || x.name.match(/Jupiter|Pendle|Eigen|ether\.fi|Kelp|Puffer/i));
+  } else if (S.intent==='stable'){
+    list = list.filter(x => x.type==='stable' || x.name.match(/Curve|Aave|Spark|Frax/i));
+  } else if (S.intent==='perps'){
+    list = list.filter(x => x.type==='perps' || x.name.match(/GMX|dYdX|Drift/i));
+  } else if (S.intent==='solana'){
+    list = list.filter(x => x.chains.includes('solana'));
+  } else if (S.intent==='base'){
+    list = list.filter(x => x.chains.includes('base'));
+  }
+
+  if (S.chain!=='all') list = list.filter(x => x.chains.includes(S.chain));
+  if (S.type!=='all')  list = list.filter(x => x.type===S.type);
+
+  if (q){
+    list = list.filter(x =>
+      x.name.toLowerCase().includes(q) ||
+      x.tags.join(' ').toLowerCase().includes(q) ||
+      (x.blurb||'').toLowerCase().includes(q)
+    );
+  }
+
+  // sort: simple flavor â€“ push staking/restaking up under â€œearnâ€
+  list.sort((a,b) => {
+    const score = (x) => {
+      let s = 0;
+      if (S.intent==='earn' && (x.type==='staking'||x.type==='lending')) s+=2;
+      if (S.intent==='restake' && x.type==='restaking') s+=3;
+      if (x.chains.includes('base')) s+=0.2;
+      if (x.chains.includes('solana')) s+=0.2;
+      return s;
+    };
+    return score(b)-score(a) || a.name.localeCompare(b.name);
+  });
+
+  render(list);
+}
+
+function render(list){
+  if (!list.length){
+    grid.innerHTML = `<div class="placeholder">No matches. Try a different chain, type, or clear the search.</div>`;
+    return;
+  }
+  grid.innerHTML = list.map(x => `
+    <a class="proto" href="${x.url}" target="_blank" rel="noopener">
+      <div class="proto-head">
+        <div class="name">${x.name}</div>
+        <div class="type">${badge(x.type)}</div>
+      </div>
+      <div class="blurb">${x.blurb||''}</div>
+      <div class="meta">
+        <div class="chains">${x.chains.map(c=>`<span class="chip">${pretty(c)}</span>`).join('')}</div>
+        <div class="tags">${x.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      </div>
+    </a>
+  `).join('');
+}
+function pretty(c){
+  return (c==='bsc'?'BSC':c[0].toUpperCase()+c.slice(1));
+}
+function badge(t){
+  const map = { staking:'LST', restaking:'Restake', lending:'Lend', dex:'DEX', bridge:'Bridge', stable:'Stable', aggregator:'Vaults', perps:'Perps', tools:'Tools' };
+  return map[t]||t;
+}
+
+/* wire UI */
+function chipGroup(el, key){
+  el.addEventListener('click', e=>{
+    const b = e.target.closest('.seg'); if(!b) return;
+    el.querySelectorAll('.seg').forEach(x=>x.classList.toggle('on', x===b));
+    S[key] = b.dataset.chain || b.dataset.type || b.dataset.intent || S[key];
+    applyFilters();
+  });
+}
+chipGroup(chainFilter,'chain');
+chipGroup(typeFilter,'type');
+chipGroup(quickIntents,'intent');
+
+qInput.addEventListener('input', ()=>{ S.q = qInput.value; applyFilters(); });
+btnClear.addEventListener('click', ()=>{ qInput.value=''; S.q=''; applyFilters(); });
+
+/* init */
+applyFilters();
+</script>
+</body>
+</html>
+
+
+
+
