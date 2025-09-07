@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>DXLT · DeFi Hub</title>
+  <title>DXLT Â· DeFi Hub</title>
   <link href="./app.css" rel="stylesheet"/>
   <style>
     /* Page-scoped helpers only (app-wide UI stays in app.css) */
@@ -81,14 +81,14 @@
       <span class="badge left">Live Mode</span>
       <div class="topbar-title">DeFi Hub</div>
       <div class="spacer"></div>
-      <div class="wallet" id="wallet-open"><span>👛</span><strong id="wallet-status">Disconnected</strong></div>
+      <div class="wallet" id="wallet-open"><span>ðŸ‘›</span><strong id="wallet-status">Disconnected</strong></div>
     </div>
 
     <!-- Content -->
     <div class="content defi-wrap">
       <!-- Hero -->
       <section class="defi-hero section">
-        <h2>One-click DeFi — staking, lending, yield & bridges</h2>
+        <h2>One-click DeFi â€” staking, lending, yield & bridges</h2>
         <div class="muted">Pick a chain, choose a category, jump straight in.</div>
         <div class="defi-controls" id="defiFilters">
           <div class="segrow">
@@ -141,7 +141,7 @@
   });
 })();
 
-/* Simple data list (curated) — chain + category tags */
+/* Simple data list (curated) â€” chain + category tags */
 (() => {
   const data = [
     // Lending
@@ -194,7 +194,7 @@
     grid.innerHTML = list.map(d => `
       <div class="dcard" data-chain="${(d.chain||[]).join(',')}" data-cat="${(d.cat||[]).join(',')}">
         <div class="row">
-          <div class="logo">${d.logo||'•'}</div>
+          <div class="logo">${d.logo||'â€¢'}</div>
           <div>
             <div class="title">${d.name}</div>
             <div class="muted">${d.blurb||''}</div>
@@ -278,6 +278,7 @@
 </script>
 </body>
 </html>
+
 
 
 
