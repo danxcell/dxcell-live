@@ -1,0 +1,62 @@
+/* ===== DXLT DEX — fully scoped ===== */
+.dex-page { --bg:#070b14; --panel:#0c1322; --border:#1b2946; --muted:#9fb0c9; --text:#e7edff; --accent:#60a5fa; --accent2:#a78bfa; background:#050910; color:var(--text); margin:0; font:14px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial; }
+.dex-page *{ box-sizing:border-box }
+
+/* topbar */
+.dex-page .dex-topbar{ position:sticky; top:0; z-index:5; display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:linear-gradient(180deg,#0b1220,rgba(11,18,32,.92)); border-bottom:1px solid var(--border) }
+.dex-page .dex-topbar .left{ display:flex; align-items:center; gap:10px }
+.dex-page .dex-topbar h1{ margin:0; font-size:16px; letter-spacing:.3px }
+.dex-page .badge{ padding:4px 10px; border-radius:999px; color:var(--muted); background:#0b1220; border:1px solid var(--border) }
+.dex-page .wallet{ display:flex; gap:8px; align-items:center; border:1px solid var(--border); padding:6px 10px; border-radius:999px; background:#0b1220 }
+
+/* layout */
+.dex-page .dex-main{ padding:14px; display:grid; gap:14px }
+.dex-page .card{ background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:12px; }
+.dex-page .grid{ display:grid; grid-template-columns: 1.6fr 1fr; gap:14px }
+@media (max-width:1100px){ .dex-page .grid{ grid-template-columns:1fr } }
+
+/* scout */
+.dex-page .chip-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px }
+.dex-page .chip{ background:#0b1220; border:1px solid var(--border); color:#cfe1ff; border-radius:999px; padding:6px 12px; cursor:pointer }
+.dex-page .chip.small{ padding:4px 10px; font-size:12px }
+.dex-page .chip.on{ background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#081426; border:0 }
+.dex-page .filters{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:6px }
+.dex-page .pill{ display:flex; gap:8px; align-items:center; background:#0b1220; border:1px solid var(--border); border-radius:10px; padding:6px 10px }
+.dex-page .pill select{ background:transparent; color:var(--text); border:0; outline:0 }
+.dex-page .dex-pills{ display:flex; gap:6px; flex-wrap:wrap }
+.dex-page .search{ margin-left:auto; display:flex; gap:8px; align-items:center }
+.dex-page .search input{ background:#0b1220; color:var(--text); border:1px solid var(--border); border-radius:10px; padding:8px 10px; min-width:300px }
+.dex-page .btn{ background:#0b1220; border:1px solid var(--border); color:#dbeafe; border-radius:10px; padding:8px 12px; cursor:pointer }
+.dex-page .btn.sm{ padding:6px 10px; border-radius:8px }
+
+/* chart */
+.dex-page .chart{ padding:0; overflow:hidden }
+.dex-page .chart-head{ display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid var(--border) }
+.dex-page .chart #chart{ width:100%; min-height:560px; border:0; display:block }
+
+/* facts */
+.dex-page .facts .facts-head{ display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:8px }
+.dex-page .facts .sub{ color:var(--muted); font-size:12px }
+.dex-page .facts-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:10px }
+.dex-page .facts-grid > div{ background:#0b1220; border:1px solid var(--border); border-radius:12px; padding:10px }
+.dex-page .facts-grid span{ color:var(--muted); font-size:12px; display:block; margin-bottom:4px }
+
+/* movers */
+.dex-page .movers-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px }
+.dex-page .muted{ color:var(--muted) }
+.dex-page .movers-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:10px }
+.dex-page .tile{ position:relative; display:flex; gap:10px; align-items:center; background:#0b1220; border:1px solid var(--border); border-radius:12px; padding:10px; cursor:pointer; transition:transform .12s ease, border-color .12s ease }
+.dex-page .tile:hover{ transform:translateY(-2px); border-color:#2a3b66 }
+.dex-page .logo{ width:28px; height:28px; border-radius:50%; box-shadow:0 0 0 1px #1f2a44 }
+.dex-page .meta{ display:flex; flex-direction:column; gap:2px }
+.dex-page .name{ font-weight:700 }
+.dex-page .sub{ font-size:12px; color:var(--muted) }
+.dex-page .right{ margin-left:auto; text-align:right }
+.dex-page .chg{ font-weight:800 }
+.dex-page .chg.pos{ color:#22c55e } .dex-page .chg.neg{ color:#ef4444 }
+.dex-page .liqs{ font-size:12px; color:var(--muted) }
+.dex-page .placeholder{ border:1px dashed #22314a; border-radius:12px; padding:16px; color:var(--muted); background:#0b1425 }
+.dex-page .foot{ margin-top:6px; }
+
+/* footer */
+.dex-page .dex-foot{ text-align:center; padding:10px; color:#7b8aa7; font-size:12px; border-top:1px solid var(--border) }

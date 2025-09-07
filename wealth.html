@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>DXLT · Wealth</title>
+  <title>DXLT Â· Wealth</title>
   <link href="./app.css" rel="stylesheet"/>
 </head>
 <body>
@@ -31,20 +31,21 @@
     </div>
 
     <nav class="nav-group">
-      <button class="nav-btn" data-route="home"><span class="i">🏠</span><span class="t">Home</span></button>
-      <button class="nav-btn" data-route="pulse"><span class="i">📈</span><span class="t">Pulse</span></button>
-      <button class="nav-btn" data-route="dex"><span class="i">🔄</span><span class="t">Dex</span></button>
-      <button class="nav-btn active" data-route="wealth"><span class="i">💼</span><span class="t">Wealth</span></button>
-      <button class="nav-btn" data-route="bots"><span class="i">🤖</span><span class="t">Bot Army</span></button>
-      <button class="nav-btn" data-route="market"><span class="i">🛒</span><span class="t">Market Place</span></button>
-      <button class="nav-btn" data-route="learn"><span class="i">🎓</span><span class="t">Learn Zone</span></button>
+      <button class="nav-btn" data-route="home"><span class="i">ðŸ </span><span class="t">Home</span></button>
+      <button class="nav-btn" data-route="pulse"><span class="i">ðŸ“ˆ</span><span class="t">Pulse</span></button>
+      <button class="nav-btn" data-route="dex"><span class="i">ðŸ”„</span><span class="t">Dex</span></button>
+      <button class="nav-btn active" data-route="wealth"><span class="i">ðŸ’¼</span><span class="t">Wealth</span></button>
+      <button class="nav-btn" data-route="defi"><span class="i">ðŸ¦</span><span class="t">DeFi</span></button>
+    <button class="nav-btn" data-route="bots"><span class="i">ðŸ¤–</span><span class="t">Bot Army</span></button>
+      <button class="nav-btn" data-route="market"><span class="i">ðŸ›’</span><span class="t">Market Place</span></button>
+      <button class="nav-btn" data-route="learn"><span class="i">ðŸŽ“</span><span class="t">Learn Zone</span></button>
     </nav>
 
     <div class="nav-spacer"></div>
     <nav class="nav-group">
-      <button class="nav-btn" data-route="settings"><span class="i">⚙️</span><span class="t">Settings</span></button>
-      <button class="nav-btn" data-route="login"><span class="i">🔒</span><span class="t">User Login</span></button>
-      <button class="nav-btn" data-route="mt"><span class="i">📊</span><span class="t">MT4/MT5 Account</span></button>
+      <button class="nav-btn" data-route="settings"><span class="i">âš™ï¸</span><span class="t">Settings</span></button>
+      <button class="nav-btn" data-route="login"><span class="i">ðŸ”’</span><span class="t">User Login</span></button>
+      <button class="nav-btn" data-route="mt"><span class="i">ðŸ“Š</span><span class="t">MT4/MT5 Account</span></button>
     </nav>
   </aside>
 
@@ -55,7 +56,7 @@
       <div class="topbar-title">Wealth</div>
       <div class="spacer"></div>
       <div class="wallet" id="wallet-open">
-        <span>👛</span><strong id="wallet-status">Disconnected</strong>
+        <span>ðŸ‘›</span><strong id="wallet-status">Disconnected</strong>
       </div>
     </div>
 
@@ -72,7 +73,7 @@
 
           <div class="stat-row">
             <div class="muted">Today</div>
-            <div class="stat-positive" id="wl-today">£ 0</div>
+            <div class="stat-positive" id="wl-today">Â£ 0</div>
           </div>
 
           <div class="kv">
@@ -80,7 +81,7 @@
             <div class="chip">AI Risk: <strong id="wl-risk">Medium</strong></div>
           </div>
 
-          <div class="placeholder" id="wl-equity">Connect to load portfolio…</div>
+          <div class="placeholder" id="wl-equity">Connect to load portfolioâ€¦</div>
         </div>
 
         <!-- Live Trade Log -->
@@ -136,7 +137,7 @@
             <div class="title">Chart</div>
             <div class="muted">Embed TradingView / custom chart</div>
           </header>
-          <div class="tv-frame" id="wl-chart">Chart goes here…</div>
+          <div class="tv-frame" id="wl-chart">Chart goes hereâ€¦</div>
         </div>
       </section>
     </div>
@@ -149,7 +150,7 @@
 /* sidebar routing */
 (() => {
   const routes = {
-    home:'index.html', pulse:'pulse.html', dex:'dex.html', wealth:'wealth.html',
+    home:'index.html', pulse:'pulse.html', dex:'dex.html', wealth:'wealth.html', defi:'defi.html', 
     bots:'bots.html', market:'market.html', learn:'learn.html',
     settings:'settings.html', login:'login.html', mt:'mt.html'
   };
@@ -161,7 +162,7 @@
   });
 })();
 
-/* Wealth demo wiring (items 3–5) */
+/* Wealth demo wiring (items 3â€“5) */
 (() => {
   // 3) Live trade log demo
   const trades = [
@@ -203,3 +204,7 @@
 </script>
 </body>
 </html>
+
+
+
+

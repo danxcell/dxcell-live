@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8"/>
@@ -30,20 +30,21 @@
     </div>
 
     <nav class="nav-group">
-      <button class="nav-btn" data-route="home"><span class="i">🏠</span><span class="t">Home</span></button>
-      <button class="nav-btn" data-route="pulse"><span class="i">📈</span><span class="t">Pulse</span></button>
-      <button class="nav-btn" data-route="dex"><span class="i">🔄</span><span class="t">Dex</span></button>
-      <button class="nav-btn" data-route="wealth"><span class="i">💼</span><span class="t">Wealth</span></button>
-      <button class="nav-btn active" data-route="bots"><span class="i">🤖</span><span class="t">Bot Army</span></button>
-      <button class="nav-btn" data-route="market"><span class="i">🛒</span><span class="t">Market Place</span></button>
-      <button class="nav-btn" data-route="learn"><span class="i">🎓</span><span class="t">Learn Zone</span></button>
+      <button class="nav-btn" data-route="home"><span class="i">ðŸ </span><span class="t">Home</span></button>
+      <button class="nav-btn" data-route="pulse"><span class="i">ðŸ“ˆ</span><span class="t">Pulse</span></button>
+      <button class="nav-btn" data-route="dex"><span class="i">ðŸ”„</span><span class="t">Dex</span></button>
+      <button class="nav-btn" data-route="wealth"><span class="i">ðŸ’¼</span><span class="t">Wealth</span></button>
+      <button class="nav-btn" data-route="defi"><span class="i">ðŸ¦</span><span class="t">DeFi</span></button>
+    <button class="nav-btn active" data-route="bots"><span class="i">ðŸ¤–</span><span class="t">Bot Army</span></button>
+      <button class="nav-btn" data-route="market"><span class="i">ðŸ›’</span><span class="t">Market Place</span></button>
+      <button class="nav-btn" data-route="learn"><span class="i">ðŸŽ“</span><span class="t">Learn Zone</span></button>
     </nav>
 
     <div class="nav-spacer"></div>
     <nav class="nav-group">
-      <button class="nav-btn" data-route="settings"><span class="i">⚙️</span><span class="t">Settings</span></button>
-      <button class="nav-btn" data-route="login"><span class="i">🔒</span><span class="t">User Login</span></button>
-      <button class="nav-btn" data-route="mt"><span class="i">📊</span><span class="t">MT4/MT5 Account</span></button>
+      <button class="nav-btn" data-route="settings"><span class="i">âš™ï¸</span><span class="t">Settings</span></button>
+      <button class="nav-btn" data-route="login"><span class="i">ðŸ”’</span><span class="t">User Login</span></button>
+      <button class="nav-btn" data-route="mt"><span class="i">ðŸ“Š</span><span class="t">MT4/MT5 Account</span></button>
     </nav>
   </aside>
 
@@ -53,7 +54,7 @@
       <div class="topbar-title">Pulse</div>
       <div class="spacer"></div>
       <div class="wallet" id="wallet-open">
-        <span>👛</span><strong id="wallet-status">Disconnected</strong>
+        <span>ðŸ‘›</span><strong id="wallet-status">Disconnected</strong>
       </div>
     </div>
 
@@ -76,10 +77,10 @@
             <svg viewBox="0 0 24 24" class="ico-sound"><path d="M4 9h4l4-3v12l-4-3H4z" fill="currentColor"/><path d="M16 8a5 5 0 010 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             <svg viewBox="0 0 24 24" class="ico-mute"><path d="M4 9h4l4-3v12l-4-3H4z" fill="currentColor"/><path d="M17 7l4 4m0-4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
-          <span class="chip">Symbol: <strong id="pulseSymbol">—</strong></span>
-          <span class="chip bpm">BPM: <strong id="pulseBpm">—</strong></span>
-          <span class="chip">State: <strong id="pulseState">—</strong></span>
-          <span class="chip">Price: <strong id="pdPrice">—</strong></span>
+          <span class="chip">Symbol: <strong id="pulseSymbol">â€”</strong></span>
+          <span class="chip bpm">BPM: <strong id="pulseBpm">â€”</strong></span>
+          <span class="chip">State: <strong id="pulseState">â€”</strong></span>
+          <span class="chip">Price: <strong id="pdPrice">â€”</strong></span>
         </div>
       </section>
 
@@ -95,14 +96,14 @@
           <div class="pd-title">
             <div class="dot live"></div>
             <div>
-              <h3 id="pdSymbol">—</h3>
+              <h3 id="pdSymbol">â€”</h3>
               <div class="muted" id="pdSubtitle">Select an asset to load insights.</div>
             </div>
           </div>
           <div class="pd-badges">
-            <span class="chip" id="pdTrend">Trend: —</span>
-            <span class="chip" id="pdRegime">Regime: —</span>
-            <span class="chip" id="pdRisk">Risk: —</span>
+            <span class="chip" id="pdTrend">Trend: â€”</span>
+            <span class="chip" id="pdRegime">Regime: â€”</span>
+            <span class="chip" id="pdRisk">Risk: â€”</span>
           </div>
         </header>
 
@@ -110,27 +111,27 @@
           <div class="pd-col">
             <div class="pd-card">
               <h4>About</h4>
-              <p class="muted" id="pdAbout">—</p>
+              <p class="muted" id="pdAbout">â€”</p>
               <div class="meta">
-                <span>Age: <strong id="pdAge">—</strong></span>
-                <span>Exchange: <strong id="pdVenue">—</strong></span>
+                <span>Age: <strong id="pdAge">â€”</strong></span>
+                <span>Exchange: <strong id="pdVenue">â€”</strong></span>
               </div>
             </div>
 
             <div class="pd-card">
               <h4>Runs</h4>
               <ul class="list">
-                <li>Last Bull Run: <strong id="pdLastBull">—</strong></li>
-                <li>Next Run ETA: <strong id="pdNextRun">—</strong></li>
+                <li>Last Bull Run: <strong id="pdLastBull">â€”</strong></li>
+                <li>Next Run ETA: <strong id="pdNextRun">â€”</strong></li>
               </ul>
             </div>
 
             <div class="pd-card">
               <h4>Signals</h4>
               <ul class="list">
-                <li>General Trend: <strong id="pdGeneralTrend">—</strong></li>
-                <li>Momentum: <strong id="pdMomentum">—</strong></li>
-                <li>Volatility: <strong id="pdVol">—</strong></li>
+                <li>General Trend: <strong id="pdGeneralTrend">â€”</strong></li>
+                <li>Momentum: <strong id="pdMomentum">â€”</strong></li>
+                <li>Volatility: <strong id="pdVol">â€”</strong></li>
               </ul>
             </div>
           </div>
@@ -156,14 +157,14 @@
       <section class="card depth-card" id="depthCard">
         <div class="mini-head">
           <span>Market Depth</span>
-          <span class="mini-sub muted">Top 25 levels · live</span>
+          <span class="mini-sub muted">Top 25 levels Â· live</span>
           <span id="depthVenue" class="mini-sub muted" style="margin-left:.5rem"></span>
         </div>
         <div class="gauge-row">
           <canvas id="depthGauge"></canvas>
           <div class="labels">
-            <div class="bid">Bids <strong id="depthBid">—%</strong></div>
-            <div class="ask">Asks <strong id="depthAsk">—%</strong></div>
+            <div class="bid">Bids <strong id="depthBid">â€”%</strong></div>
+            <div class="ask">Asks <strong id="depthAsk">â€”%</strong></div>
           </div>
         </div>
         <canvas id="depthSpark" style="margin-top:.5rem;width:540px;max-width:100%;height:44px"></canvas>
@@ -185,36 +186,36 @@
           <div class="gauge">
             <canvas id="ppGauge"></canvas>
             <div class="gauge-label">
-              <div><span class="long">Long</span> <strong id="ppLong">—%</strong></div>
-              <div><span class="short">Short</span> <strong id="ppShort">—%</strong></div>
-              <div class="muted" id="ppBias">Bias: —</div>
+              <div><span class="long">Long</span> <strong id="ppLong">â€”%</strong></div>
+              <div><span class="short">Short</span> <strong id="ppShort">â€”%</strong></div>
+              <div class="muted" id="ppBias">Bias: â€”</div>
             </div>
           </div>
         </div>
         <div class="pp-col zones">
           <div class="zone-card">
-            <div class="zone-head">Nearest Liquidity — <span class="long">Long</span></div>
+            <div class="zone-head">Nearest Liquidity â€” <span class="long">Long</span></div>
             <div class="heat-wrap">
               <canvas id="ppLongHeat"></canvas>
-              <div class="heat-legend"><span class="muted">Below</span> <span id="ppLongPrice">—</span></div>
+              <div class="heat-legend"><span class="muted">Below</span> <span id="ppLongPrice">â€”</span></div>
             </div>
           </div>
           <div class="zone-card">
-            <div class="zone-head">Nearest Liquidity — <span class="short">Short</span></div>
+            <div class="zone-head">Nearest Liquidity â€” <span class="short">Short</span></div>
             <div class="heat-wrap">
               <canvas id="ppShortHeat"></canvas>
-              <div class="heat-legend"><span class="muted">Above</span> <span id="ppShortPrice">—</span></div>
+              <div class="heat-legend"><span class="muted">Above</span> <span id="ppShortPrice">â€”</span></div>
             </div>
           </div>
         </div>
       </div>
-      <div class="pp-foot muted">Source: CoinGecko market data · Timeframe: <span id="ppTfLabel">5m</span></div>
+      <div class="pp-foot muted">Source: CoinGecko market data Â· Timeframe: <span id="ppTfLabel">5m</span></div>
     </section>
 
     <!-- Top 20 -->
     <section class="card pulse-top" id="top20">
       <div class="top-head">
-        <div class="title">Top 20 — Market</div>
+        <div class="title">Top 20 â€” Market</div>
         <div class="segrow small" id="topMode">
           <button class="seg on" data-mode="mcap">Mkt Cap</button>
           <button class="seg" data-mode="movers1h">Movers 1h</button>
@@ -229,7 +230,7 @@
 
 <div class="modal-backdrop" id="wallet-modal" aria-hidden="true">
   <div class="modal" role="dialog" aria-modal="true">
-    <span class="close-x" id="wallet-close" role="button" tabindex="0" aria-label="Close">✕</span>
+    <span class="close-x" id="wallet-close" role="button" tabindex="0" aria-label="Close">âœ•</span>
     <h4>Connect Wallet</h4>
     <p style="color:#94a3b8;margin:0 0 8px 0">Choose a wallet:</p>
     <div class="row">
@@ -254,7 +255,7 @@
 <script>
 (() => {
   const routes = {
-    home:'index.html', pulse:'pulse.html', dex:'dex.html', wealth:'wealth.html',
+    home:'index.html', pulse:'pulse.html', dex:'dex.html', wealth:'wealth.html', defi:'defi.html', 
     bots:'bots.html', market:'market.html', learn:'learn.html',
     settings:'settings.html', login:'login.html', mt:'mt.html'
   };
@@ -286,7 +287,7 @@
       (j.items||[]).forEach(it=>{
         const opt=document.createElement('option');
         opt.value = it.symbol;
-        opt.label = `${it.base}/${it.quote} — ${(it.venues||[]).join('/')}`;
+        opt.label = `${it.base}/${it.quote} â€” ${(it.venues||[]).join('/')}`;
         opt.textContent = opt.label;
         list.appendChild(opt);
       });
@@ -342,7 +343,7 @@
 
   const getSymbol = () => {
     const chip = chipSym?.textContent.trim();
-    if (chip && chip !== '—') return chip.toUpperCase();
+    if (chip && chip !== 'â€”') return chip.toUpperCase();
     if (window.CURRENT?.symbol) return String(window.CURRENT.symbol).toUpperCase();
     return S.symbol;
   };
@@ -360,7 +361,7 @@
     list.find(c => (c.symbol||'').toLowerCase()===baseLower) ||
     list.find(c => (c.name||'').toLowerCase().startsWith(baseLower)) || null;
 
-  const fmt = (n,dp=2)=> (n==null||!isFinite(n)) ? '—' : Number(n).toLocaleString(
+  const fmt = (n,dp=2)=> (n==null||!isFinite(n)) ? 'â€”' : Number(n).toLocaleString(
     undefined,{minimumFractionDigits:dp,maximumFractionDigits:dp});
   const badgeTrend=(p1h,p24h)=> p1h>0.8&&p24h>1?'UP':(p1h<-0.8&&p24h<-1?'DOWN':'SIDE');
   const badgeRegime=(v)=> v>4?'HIGH VOL':v>2?'MED VOL':'LOW VOL';
@@ -385,8 +386,8 @@
 
   function updateInfo(coin, sym){
     titleSym && (titleSym.textContent = sym);
-    subEl    && (subEl.textContent    = coin.name ? `${coin.name} — rank #${coin.market_cap_rank}` : '—');
-    priceEl  && (priceEl.textContent  = coin.current_price!=null ? `$${fmt(coin.current_price,2)}` : '—');
+    subEl    && (subEl.textContent    = coin.name ? `${coin.name} â€” rank #${coin.market_cap_rank}` : 'â€”');
+    priceEl  && (priceEl.textContent  = coin.current_price!=null ? `$${fmt(coin.current_price,2)}` : 'â€”');
   }
 
   function sizeCanvas(cv,w,h){
@@ -446,7 +447,7 @@
       updateInfo(coin, sym); setBadges(coin);
       drawSpark(cSP,S.priceSpark,'#22d3ee'); drawSpark(cSV,S.volSpark,'#a78bfa'); drawSpark(cST,S.trendSpark,'#34d399');
 
-      if (chipSym && chipSym.textContent.trim()==='—') chipSym.textContent=sym;
+      if (chipSym && chipSym.textContent.trim()==='â€”') chipSym.textContent=sym;
     }catch(e){ console.warn('pulse-live tick error', e); }
   }
 
@@ -454,7 +455,7 @@
   cECG && ECG.loop(cECG, ()=>S.bpm, ()=>S.state);
 
   document.addEventListener('DOMContentLoaded', ()=>{
-    if (chipSym && chipSym.textContent.trim()!=='—') S.symbol = chipSym.textContent.trim().toUpperCase();
+    if (chipSym && chipSym.textContent.trim()!=='â€”') S.symbol = chipSym.textContent.trim().toUpperCase();
     tick(); setInterval(tick,15000);
   });
 })();
@@ -476,10 +477,10 @@
 
   function getSymbol(){
     const t = document.getElementById('pulseSymbol')?.textContent.trim();
-    if (t && t !== '—') return t.toUpperCase();
+    if (t && t !== 'â€”') return t.toUpperCase();
     if (window.CURRENT?.symbol) return String(window.CURRENT.symbol).toUpperCase();
     const ht = document.getElementById('pdSymbol')?.textContent.trim();
-    return (ht && ht !== '—') ? ht.toUpperCase() : 'BTCUSDT';
+    return (ht && ht !== 'â€”') ? ht.toUpperCase() : 'BTCUSDT';
   }
 
   function sizeCanvas(cv, w, h){
@@ -557,7 +558,7 @@
 
       bidEl && (bidEl.textContent = `${bid.toFixed(0)}%`);
       askEl && (askEl.textContent = `${ask.toFixed(0)}%`);
-      venueEl && (venueEl.textContent = `• ${sym} • source: ${j.venue || '—'} • ${tz}`);
+      venueEl && (venueEl.textContent = `â€¢ ${sym} â€¢ source: ${j.venue || 'â€”'} â€¢ ${tz}`);
 
       gaugeCv && drawGauge(gaugeCv, bid);
 
@@ -568,7 +569,7 @@
 
   const tick = ()=> loadDepth((()=>{
     const t=document.getElementById('pulseSymbol')?.textContent.trim();
-    if(t&&t!=='—') return t.toUpperCase();
+    if(t&&t!=='â€”') return t.toUpperCase();
     return window.CURRENT?.symbol?.toUpperCase() || 'BTCUSDT';
   })());
   document.addEventListener('DOMContentLoaded', ()=>{ tick(); setInterval(tick,15000); });
@@ -612,7 +613,7 @@
 
   const currentSymbol = () => {
     const chip = document.getElementById('pulseSymbol')?.textContent.trim();
-    if (chip && chip !== '—') return chip.toUpperCase();
+    if (chip && chip !== 'â€”') return chip.toUpperCase();
     if (window.CURRENT?.symbol) return String(window.CURRENT.symbol).toUpperCase();
     return 'BTCUSDT';
   };
@@ -727,8 +728,8 @@
         drawHeatmap(shortHeatCv, book.asks, last, 'short');
         const nLong  = nearestLiquidity(book.bids, last, 'long');
         const nShort = nearestLiquidity(book.asks, last, 'short');
-        longPrice  && (longPrice.textContent  = nLong  ? nLong.toLocaleString()  : '—');
-        shortPrice && (shortPrice.textContent = nShort ? nShort.toLocaleString() : '—');
+        longPrice  && (longPrice.textContent  = nLong  ? nLong.toLocaleString()  : 'â€”');
+        shortPrice && (shortPrice.textContent = nShort ? nShort.toLocaleString() : 'â€”');
       }
     }catch(e){ console.warn('positions-wire', e); }
   }
@@ -754,7 +755,7 @@
   let mode = 'mcap';
   let cache = { time: 0, items: [] };
 
-  const fmt = (n, dp=2) => (n==null||!isFinite(n)) ? '—' :
+  const fmt = (n, dp=2) => (n==null||!isFinite(n)) ? 'â€”' :
     Number(n).toLocaleString(undefined, { minimumFractionDigits: dp, maximumFractionDigits: dp });
 
   async function fetchTop(limit = 250) {
@@ -791,7 +792,7 @@
   }
 
   function changeBadge(pct) {
-    if (!Number.isFinite(pct)) return '—';
+    if (!Number.isFinite(pct)) return 'â€”';
     const s = pct >= 0 ? '+' : '';
     return `${s}${fmt(pct, 2)}%`;
   }
@@ -800,7 +801,7 @@
     grid.innerHTML = '';
     items.forEach(x => {
       const sym  = symbolFor(x);
-      const price= x.current_price != null ? `$${fmt(x.current_price, 2)}` : '—';
+      const price= x.current_price != null ? `$${fmt(x.current_price, 2)}` : 'â€”';
       const p1h  = Number(x.price_change_percentage_1h_in_currency);
       const p24h = Number(x.price_change_percentage_24h_in_currency);
       const green = (v) => Number.isFinite(v) && v > 0;
@@ -813,7 +814,7 @@
         <div class="row">
           <div class="left">
             <div class="sym">${(x.symbol || x.name || '').toUpperCase()}</div>
-            <div class="name muted">#${x.market_cap_rank ?? '—'} ${x.name ?? ''}</div>
+            <div class="name muted">#${x.market_cap_rank ?? 'â€”'} ${x.name ?? ''}</div>
           </div>
           <div class="right">
             <div class="price">${price}</div>
@@ -866,3 +867,7 @@
 <script src="./pulse.js"></script>
 </body>
 </html>
+
+
+
+
