@@ -196,16 +196,29 @@
 <footer>DXLT Neon v1.0</footer>
 <script src="./feeds.js"></script>
 
-<!-- Clamp: keep chart header as plain 'Chart' -->
+<!-- Hard clamp: keep chart header EXACTLY 'Chart' -->
 <script>
-(function () {
-  const el = document.getElementById('chartTitle');
-  if (!el) return;
-  const base = 'Chart';
-  const strip = s => (s || '').replace(/\s*(?:â€”|—|–|-).*/,'').trim();
-  const enforce = () => { if (strip(el.textContent) !== base) el.textContent = base; };
-  enforce();
-  new MutationObserver(enforce).observe(el, { childList: true, characterData: true, subtree: true });
+(function lockChartTitle(){
+  const TARGET = 'Chart';
+  const norm = s => (s||'').replace(/[\u00A0 ]*(?:â€”|—|–|-).*/,'').trim();
+
+  function apply(){
+    const el = document.getElementById('chartTitle');
+    if (!el) return;
+    if (norm(el.textContent) !== TARGET) el.textContent = TARGET;
+  }
+
+  // initial
+  apply();
+
+  // survive node replacement
+  new MutationObserver(apply).observe(document.body, {
+    subtree: true, childList: true, characterData: true
+  });
+
+  // belt-and-braces for late timers
+  const tick = setInterval(apply, 400);
+  setTimeout(()=>clearInterval(tick), 10000);
 })();
 </script>
 
