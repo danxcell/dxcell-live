@@ -1,205 +1,67 @@
-<!DOCTYPE html>
-<html>
+﻿<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>DXLT · Wealth</title>
-  <link href="./app.css" rel="stylesheet"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DXCELL — Wealth</title>
+  <link rel="stylesheet" href="app.css">
 </head>
 <body>
-<header class="dxtl-header">
-  <img class="logo" src="logo.svg" alt="DXLT"/>
-  <div class="status"><span class="pulse-dot"></span>Live Mode</div>
-</header>
-
-<div class="app">
-  <!-- Sidebar -->
   <aside class="nav-rail">
     <div class="brand">
-      <svg aria-hidden="true" class="brand-icon" viewBox="0 0 48 48">
-        <defs>
-          <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0" stop-color="#60A5FA" />
-            <stop offset="1" stop-color="#22D3EE" />
-          </linearGradient>
-        </defs>
-        <circle cx="24" cy="24" r="20" fill="url(#g)" opacity=".25"></circle>
-        <circle cx="24" cy="24" r="19" fill="none" stroke="url(#g)" stroke-width="2" opacity=".6"></circle>
-        <polygon points="21,17 33,24 21,31" fill="url(#g)"></polygon>
-      </svg>
-      <span class="brand-text">XLT</span>
+      <img class="brand-icon" src="logo.svg" alt="DXT">
+      <div class="brand-text">DXCELL</div>
     </div>
-
-    <nav class="nav-group">
-      <button class="nav-btn" data-route="home"><span class="i">🏠</span><span class="t">Home</span></button>
-      <button class="nav-btn" data-route="pulse"><span class="i">📈</span><span class="t">Pulse</span></button>
-      <button class="nav-btn" data-route="dex"><span class="i">🔄</span><span class="t">Dex</span></button>
-      <button class="nav-btn active" data-route="wealth"><span class="i">💼</span><span class="t">Wealth</span></button>
-      <button class="nav-btn" data-route="bots"><span class="i">🤖</span><span class="t">Bot Army</span></button>
-      <button class="nav-btn" data-route="market"><span class="i">🛒</span><span class="t">Market Place</span></button>
-      <button class="nav-btn" data-route="learn"><span class="i">🎓</span><span class="t">Learn Zone</span></button>
-    </nav>
-
+    <div class="nav-group">
+      <div class="nav-btn" data-route="home"><span class="i">🏠</span><span class="t">Home</span></div>
+      <div class="nav-btn active" data-route="wealth"><span class="i">💼</span><span class="t">Wealth</span></div>
+      <div class="nav-btn" data-route="pulse"><span class="i">💓</span><span class="t">Pulse</span></div>
+    </div>
     <div class="nav-spacer"></div>
-    <nav class="nav-group">
-      <button class="nav-btn" data-route="settings"><span class="i">⚙️</span><span class="t">Settings</span></button>
-      <button class="nav-btn" data-route="login"><span class="i">🔒</span><span class="t">User Login</span></button>
-      <button class="nav-btn" data-route="mt"><span class="i">📊</span><span class="t">MT4/MT5 Account</span></button>
-    </nav>
   </aside>
 
-  <main class="main">
-    <!-- Topbar -->
-    <div class="topbar">
-      <span class="badge left">Live Mode</span>
-      <div class="topbar-title">Wealth</div>
+  <div class="app main">
+    <header class="topbar">
+      <span class="badge">Wealth</span>
+      <h3 class="topbar-title">Portfolio & % Builder</h3>
       <div class="spacer"></div>
-      <div class="wallet" id="wallet-open">
-        <span>👛</span><strong id="wallet-status">Disconnected</strong>
-      </div>
-    </div>
+      <div class="wallet" id="walletBtn"><span>Wallet</span><span id="wallet-status">Disconnected</span></div>
+    </header>
 
-    <!-- Content -->
-    <div class="content wealth-wrap">
-      <!-- Row 1 -->
+    <main class="wealth-wrap">
       <section class="grid-2">
-        <!-- Portfolio card -->
         <div class="card">
-          <header class="card-head">
-            <div class="title">Portfolio</div>
-            <div class="muted">Net Worth (30d)</div>
-          </header>
-
-          <div class="stat-row">
-            <div class="muted">Today</div>
-            <div class="stat-positive" id="wl-today">£ 0</div>
-          </div>
-
-          <div class="kv">
-            <div class="chip">PS1</div>
-            <div class="chip">AI Risk: <strong id="wl-risk">Medium</strong></div>
-          </div>
-
-          <div class="placeholder" id="wl-equity">Connect to load portfolio…</div>
+          <div class="card-head"><h4 class="card-title">Portfolio</h4></div>
+          <div class="stat-row"><div>Equity</div><div class="stat-positive" id="wlthEquity">$0.00</div></div>
+          <div class="kv"><span class="chip">24h</span><span class="up" id="wlthChg">+0.00%</span></div>
+          <div class="tv-frame" id="wlthChart">Chart placeholder</div>
         </div>
 
-        <!-- Live Trade Log -->
         <div class="card">
-          <header class="card-head">
-            <div class="title">Live Trade Log</div>
-          </header>
-
-          <div class="table">
-            <div class="tr head">
-              <div>Time</div>
-              <div>Action</div>
-              <div>Trade</div>
-            </div>
-            <div class="tbody" id="wl-trades"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Row 2 -->
-      <section class="grid-2">
-        <!-- % Builder -->
-        <div class="card">
-          <header class="card-head">
-            <div class="title">% Builder</div>
-            <div class="muted">Today</div>
-          </header>
-
+          <div class="card-head"><h4 class="card-title">% Builder</h4></div>
           <div class="progress">
-            <div class="bar"><span id="wl-progress" style="width:0%"></span></div>
-            <div class="row">
-              <div class="muted">This Week Target <strong>+8%</strong></div>
-              <div>Current <strong id="wl-current">+0.0%</strong></div>
-            </div>
+            <div class="bar"><span style="width:0%" id="wlthProgressFill"></span></div>
+            <div class="kv"><span class="muted">Target:</span><strong id="wlthTarget">10%</strong></div>
           </div>
-
-          <div class="row gap">
-            <button class="btn" id="wl-log">Log +0.5%</button>
-            <button class="btn" id="wl-reset">Reset</button>
+          <div class="segrow">
+            <button class="seg on">Daily</button>
+            <button class="seg">Weekly</button>
+            <button class="seg">Monthly</button>
           </div>
-
-          <div class="segrow" id="wl-tabs">
-            <button class="seg on" data-tab="sandbox">Sandbox</button>
-            <button class="seg" data-tab="builder">% Builder</button>
-            <button class="seg" data-tab="pulse">Market Pulse</button>
-            <button class="seg" data-tab="ai">AI Buddy</button>
-          </div>
-        </div>
-
-        <!-- Chart embed -->
-        <div class="card">
-          <header class="card-head">
-            <div class="title">Chart</div>
-            <div class="muted">Embed TradingView / custom chart</div>
-          </header>
-          <div class="tv-frame" id="wl-chart">Chart goes here…</div>
         </div>
       </section>
-    </div>
-  </main>
-</div>
 
-<footer>DXLT Neon v1.0</footer>
+      <section class="card">
+        <div class="card-head"><h4 class="card-title">Live Trade Log</h4></div>
+        <div class="table">
+          <div class="tr head"><div>Time</div><div>P/L</div><div>Note</div></div>
+          <div class="tr"><div>—</div><div class="up">+0.00%</div><div>Ready</div></div>
+        </div>
+      </section>
+    </main>
+  </div>
 
-<script>
-/* sidebar routing */
-(() => {
-  const routes = {
-    home:'index.html', pulse:'pulse.html', dex:'dex.html', wealth:'wealth.html',
-    bots:'bots.html', market:'market.html', learn:'learn.html',
-    settings:'settings.html', login:'login.html', mt:'mt.html'
-  };
-  document.querySelectorAll('.nav-btn[data-route]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const r = btn.getAttribute('data-route');
-      if (routes[r]) window.location.href = routes[r];
-    });
-  });
-})();
-
-/* Wealth demo wiring (items 3–5) */
-(() => {
-  // 3) Live trade log demo
-  const trades = [
-    { t:'10:45:08', a:'Buy',  s:'ETH/USDT' },
-    { t:'10:17:42', a:'Sell', s:'AAPL' },
-    { t:'09:30:10', a:'Buy',  s:'BTC/USDT' },
-  ];
-  const body = document.getElementById('wl-trades');
-  body.innerHTML = trades.map(r =>
-    `<div class="tr">
-       <div>${r.t}</div>
-       <div class="${r.a==='Buy' ? 'up' : 'down'}">${r.a}</div>
-       <div>${r.s}</div>
-     </div>`
-  ).join('');
-
-  // 4) % Builder progress demo
-  let pct = 0;
-  const bar = document.getElementById('wl-progress');
-  const cur = document.getElementById('wl-current');
-  document.getElementById('wl-log').addEventListener('click', () => {
-    pct = Math.min(100, pct + 0.5);
-    bar.style.width = pct + '%';
-    cur.textContent = `+${pct.toFixed(1)}%`;
-  });
-  document.getElementById('wl-reset').addEventListener('click', () => {
-    pct = 0;
-    bar.style.width = '0%';
-    cur.textContent = '+0.0%';
-  });
-
-  // 5) Segmented tabs visual toggle
-  const tabs = document.getElementById('wl-tabs');
-  tabs.addEventListener('click', (e) => {
-    const b = e.target.closest('button.seg'); if (!b) return;
-    tabs.querySelectorAll('.seg').forEach(x => x.classList.toggle('on', x === b));
-  });
-})();
-</script>
+  <script src="nav.js"></script>
+  <script src="wealth.js"></script>
 </body>
 </html>

@@ -1,0 +1,79 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DXCELL — Core</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <aside class="nav-rail">
+    <div class="brand">
+      <img class="brand-icon" src="logo.svg" alt="DXT">
+      <div class="brand-text">DXCELL</div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-btn active" data-route="home"><span class="i">🏠</span><span class="t">Home</span></div>
+      <div class="nav-btn" data-route="wealth"><span class="i">💼</span><span class="t">Wealth</span></div>
+      <div class="nav-btn" data-route="pulse"><span class="i">💓</span><span class="t">Pulse</span></div>
+    </div>
+    <div class="nav-spacer"></div>
+  </aside>
+
+  <div class="app main">
+    <header class="topbar">
+      <span class="badge">Alpha Terminal</span>
+      <h3 class="topbar-title">Core</h3>
+      <div class="spacer"></div>
+      <div class="wallet" id="walletBtn"><span>Wallet</span><span id="wallet-status">Disconnected</span></div>
+    </header>
+
+    <main class="content">
+      <section class="card">
+        <div class="card-head">
+          <h4 class="card-title" id="chartTitle">Chart \u2013 BTC</h4>
+        </div>
+        <div class="chart-box" id="tvChart">TradingView / Chart goes here</div>
+      </section>
+
+      <section class="alpha-matrix">
+        <div class="card">
+          <div class="card-head center">
+            <h4 class="card-title">Alpha Matrix</h4>
+            <span class="muted">Live reads</span>
+          </div>
+          <div class="am-grid">
+            <div class="am-row"><div class="name">Trend</div><div class="am-bar"><div class="fill" style="width:42%"></div></div><div class="sub">Neutral</div></div>
+            <div class="am-row"><div class="name">Volatility</div><div class="am-bar"><div class="fill" style="width:68%"></div></div><div class="sub">Rising</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="feeds-wrap">
+        <div class="feeds-row">
+          <div class="card news-feed">
+            <div class="feed-header">
+              <div class="title">News</div>
+              <div class="filters"><button class="seg on">All</button><button class="seg">Crypto</button></div>
+            </div>
+            <div class="news-content" id="newsContent">
+              <div class="news-item"><div class="meta"><span class="src">Source</span><span class="time">now</span></div><div class="title">Headline placeholder</div></div>
+            </div>
+          </div>
+          <div class="card calendar-feed">
+            <div class="feed-header"><div class="title">Calendar</div></div>
+            <div class="legend"><span class="dot pos"></span>Bullish <span class="dot neg"></span>Bearish <span class="dot neu"></span>Neutral</div>
+            <table class="cal-table">
+              <thead><tr><th>Time</th><th>Event</th><th>Impact</th></tr></thead>
+              <tbody><tr><td>12:00</td><td>FOMC Member Speaks</td><td class="neu">Neutral</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="nav.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
