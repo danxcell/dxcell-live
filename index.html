@@ -1,5 +1,4 @@
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html>
 <head>
@@ -64,7 +63,8 @@
 <div class="grid-2">
 <section class="card chart-card">
 <header class="card-head">
-<h2 class="card-title" id="chartTitle">Chart — Selected Asset</h2>
+  <!-- CHANGED: plain Chart -->
+  <h2 class="card-title" id="chartTitle">Chart</h2>
 </header>
 <div class="chart-box" id="chartBox"></div>
 </section>
@@ -91,24 +91,31 @@
 </table>
 </aside>
 </div>
+
 <section class="card alpha-matrix" id="alphaMatrix">
-<header class="card-head">
-<h2 class="card-title">Alpha Matrix — <span id="amSymbol">—</span> <span class="muted" id="amPeriod"></span></h2>
-</header>
-<div class="am-controls" id="amControls">
-<button class="am-pill active" data-filter="all">All</button>
-<button class="am-pill" data-filter="momentum">Momentum</button>
-<button class="am-pill" data-filter="trend">Trend</button>
-<button class="am-pill" data-filter="volatility">Volatility</button>
-<button class="am-pill" data-filter="volume">Volume</button>
-</div>
-<div class="am-grid" id="amGrid"></div>
-<div class="am-summary" id="amSummary">
-<div class="am-meter bull"><div class="label">Bull</div><div class="val" id="amBull">—</div></div>
-<div class="am-meter neutral"><div class="label">Neutral</div><div class="val" id="amNeutral">—</div></div>
-<div class="am-meter bear"><div class="label">Bear</div><div class="val" id="amBear">—</div></div>
-</div>
+  <header class="card-head">
+    <!-- CHANGED: clean title; keep spans hidden so JS won't break -->
+    <h2 class="card-title">
+      Alpha Matrix
+      <span id="amSymbol" style="display:none"></span>
+      <span class="muted" id="amPeriod" style="display:none"></span>
+    </h2>
+  </header>
+  <div class="am-controls" id="amControls">
+    <button class="am-pill active" data-filter="all">All</button>
+    <button class="am-pill" data-filter="momentum">Momentum</button>
+    <button class="am-pill" data-filter="trend">Trend</button>
+    <button class="am-pill" data-filter="volatility">Volatility</button>
+    <button class="am-pill" data-filter="volume">Volume</button>
+  </div>
+  <div class="am-grid" id="amGrid"></div>
+  <div class="am-summary" id="amSummary">
+    <div class="am-meter bull"><div class="label">Bull</div><div class="val" id="amBull">—</div></div>
+    <div class="am-meter neutral"><div class="label">Neutral</div><div class="val" id="amNeutral">—</div></div>
+    <div class="am-meter bear"><div class="label">Bear</div><div class="val" id="amBear">—</div></div>
+  </div>
 </section>
+
 <section class="feeds-wrap">
   <div class="feeds-row" id="feedsRowRails">
     <div class="card news-feed" id="newsFeed">
